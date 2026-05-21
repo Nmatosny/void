@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VOID Crew - Streetwear premium underground. Drop limitado, modelagem oversized brutalista e estampas de alta durabilidade. Siga o vazio.">
+  <title>VOID CREW | Drop Limitado Streetwear Premium</title>
+  
+  <!-- Preconexão Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Unbounded:wght@800;900&display=swap" rel="stylesheet">
+  
+  <!-- Estilos Customizados -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Favicon Mock -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%23ffffff%22 font-family=%22monospace%22>V</text></svg>">
+</head>
+<body>
+
+  <!-- Grain Overlay (Efeito Brutalista Superior) -->
+  <div class="grain-overlay" id="grainOverlay"></div>
+
+  <!-- Announcement Bar (Urgency Countdown) -->
+  <div class="announcement-bar" id="announcementBar">
+    <div class="announcement-content">
+      <span class="live-dot animate-pulse"></span>
+      <span class="announcement-text">O DROP ENCERRA EM: </span>
+      <span id="countdownTimer" class="countdown-timer">02:45:12</span>
+      <span class="divider">|</span>
+      <span class="promo-badge">FRETE GRÁTIS A PARTIR DE 3 PEÇAS</span>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="main-header" id="mainHeader">
+    <div class="header-container">
+      <button class="menu-toggle-btn" id="menuToggle" aria-label="Abrir Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      <a href="#" class="brand-logo" id="brandLogo">VOID</a>
+      <nav class="main-nav" id="mainNav">
+        <a href="#produtos" class="nav-link">Drop</a>
+        <a href="#beneficios" class="nav-link">Qualidade</a>
+        <a href="#lifestyle" class="nav-link">Vibe</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+      </nav>
+      <div class="header-actions">
+        <button class="cart-trigger-btn" id="cartTrigger" aria-label="Abrir Carrinho">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-badge-count" id="cartBadge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero">
+    <div class="hero-bg-container">
+      <img src="assets/campaign-tiger-gym.png" alt="VOID Crew Gym Streetwear" class="hero-bg-image">
+      <div class="hero-vignette"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-sub">NOT FOR EVERYONE.</div>
+      <h1 class="hero-title" data-text="VOID CREW">VOID CREW</h1>
+      <p class="hero-desc">
+        Oversized Premium. Drop Limitado.<br>
+        Streetwear underground de alta gramatura.
+      </p>
+      <div class="hero-cta-wrapper">
+        <a href="#produtos" class="btn-primary" id="heroCta">SHOP NOW</a>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span class="mouse-icon"><span class="mouse-wheel"></span></span>
+      <span class="scroll-text">SCROLL DOWN</span>
+    </div>
+  </section>
+
+  <!-- Slogan Scrolling Ticker (Endless Marquee) -->
+  <section class="marquee-section" id="marquee">
+    <div class="marquee-track">
+      <div class="marquee-content">
+        <span>NOT FOR EVERYONE • </span>
+        <span>VOID IS A STATE OF MIND • </span>
+        <span>WE DON'T RESTOCK • </span>
+        <span>LIMITED DROP • </span>
+        <span>NOT FOR EVERYONE • </span>
+        <span>VOID IS A STATE OF MIND • </span>
+        <span>WE DON'T RESTOCK • </span>
+        <span>LIMITED DROP • </span>
+      </div>
+      <div class="marquee-content" aria-hidden="true">
+        <span>NOT FOR EVERYONE • </span>
+        <span>VOID IS A STATE OF MIND • </span>
+        <span>WE DON'T RESTOCK • </span>
+        <span>LIMITED DROP • </span>
+        <span>NOT FOR EVERYONE • </span>
+        <span>VOID IS A STATE OF MIND • </span>
+        <span>WE DON'T RESTOCK • </span>
+        <span>LIMITED DROP • </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products & Bundles Grid Section -->
+  <section class="products-section" id="produtos">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-subtitle">// THE CATALOG</span>
+        <h2 class="section-title">THE DROP LOTE 01</h2>
+        <p class="section-desc">Streetwear premium de alta gramatura com modelagem oversized autêntica. Edição estritamente limitada com desconto progressivo automático no carrinho.</p>
+      </div>
+
+      <!-- Minimal Premium Fashion Notice -->
+      <div class="catalog-header-minimal">
+        <span class="auto-discount-notice">✦ COMPRE MAIS, PAGUE MENOS — DESCONTOS PROGRESSIVOS E FRETE GRÁTIS APLICADOS AUTOMATICAMENTE NO CARRINHO</span>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-catalog-grid" id="productsCatalog">
+        <!-- Dinamicamente preenchido via JS baseado nos PRODUTOS REAIS -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Brand Benefits Grid Section -->
+  <section class="benefits-section" id="beneficios">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-subtitle">// ESPECIFICAÇÕES TÉCNICAS</span>
+        <h2 class="section-title">CONSTRUÇÃO PREMIUM</h2>
+        <p class="section-desc">Cada peça é meticulosamente costurada com tecidos pesados de alta gramatura para caimento perfeito.</p>
+      </div>
+
+      <div class="benefits-grid">
+        <!-- Benefício 1 -->
+        <div class="benefit-card">
+          <div class="benefit-icon">👕</div>
+          <h3 class="benefit-title">Algodão Premium</h3>
+          <p class="benefit-text">Algodão de fio penteado 30.1 de altíssima gramatura (heavyweight), proporcionando extrema maciez e isolamento premium.</p>
+        </div>
+        <!-- Benefício 2 -->
+        <div class="benefit-card">
+          <div class="benefit-icon">✂</div>
+          <h3 class="benefit-title">Modelagem Oversized</h3>
+          <p class="benefit-text">Corte streetwear autêntico com ombros caídos e caimento amplo, mantendo a estrutura robusta e sem perder o formato.</p>
+        </div>
+        <!-- Benefício 3 -->
+        <div class="benefit-card">
+          <div class="benefit-icon">🎨</div>
+          <h3 class="benefit-title">Estampa Alta Durabilidade</h3>
+          <p class="benefit-text">Impressão em Silk Screen de alta definição que não descasca, não racha e mantém a nitidez após dezenas de lavagens.</p>
+        </div>
+        <!-- Benefício 4 -->
+        <div class="benefit-card">
+          <div class="benefit-icon">⚡</div>
+          <h3 class="benefit-title">Drop Exclusivo</h3>
+          <p class="benefit-text">Zero restocks. Cada drop possui uma tiragem limitada e exclusiva que nunca mais será comercializada pela VOID.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flagship Product Feature Section (User Upload Showcase) -->
+  <section class="feature-flagship-section" id="featured-product">
+    <div class="section-container flagship-layout">
+      <div class="flagship-image-gallery">
+        <div class="flagship-main-image-wrapper">
+          <img src="assets/campaign-tiger-gym.png" alt="Camiseta VOID Tiger Oversized Gym Campaign" id="flagshipImage">
+          <span class="flagship-label">DROP EXCLUSIVO</span>
+        </div>
+      </div>
+      <div class="flagship-details">
+        <span class="section-subtitle">// THE ULTIMATE PIECE</span>
+        <h2 class="flagship-title">VOID TIGER OVERSIZED TEE</h2>
+        <div class="flagship-quote">"VOID WAS NOT MADE TO FIT THE CROWD"</div>
+        <p class="flagship-description">
+          A peça central do nosso drop. Com estampa maciça nas costas apresentando o tigre de ferro, raios roxos vulcanizados e logotipo frontal em tipografia distressed. Modelagem robusta inspirada no streetwear clássico dos anos 90.
+        </p>
+        <div class="flagship-specs">
+          <div class="spec-row"><span>Gola:</span> <span>Ribana canelada 3cm pesada</span></div>
+          <div class="spec-row"><span>Costuras:</span> <span>Reforço de ombro a ombro</span></div>
+          <div class="spec-row"><span>Gramatura:</span> <span>220g/m² (Robusto e Pesado)</span></div>
+        </div>
+        <div class="flagship-cta">
+          <a href="#produtos" class="btn-secondary">VER O DROP COMPLETO ➔</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lifestyle Carousel Section -->
+  <section class="lifestyle-section" id="lifestyle">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-subtitle">// LIFESTYLE GALLERY</span>
+        <h2 class="section-title">THE STREETS CALL</h2>
+        <p class="section-desc">Veja os detalhes e a vibe da marca em ação nos cenários urbanos e industriais.</p>
+      </div>
+
+      <div class="carousel-container" id="lifestyleCarousel">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="carousel-slide">
+            <img src="assets/campaign-tiger-gym.png" alt="VOID Tiger Oversized - Gym Edition">
+            <div class="slide-caption">VOID Tiger Oversized — Hardcore Training Spec</div>
+          </div>
+          <div class="carousel-slide">
+            <img src="assets/campaign-broccoli-gym.png" alt="VOID Broccoli Oversized - Gym Edition">
+            <div class="slide-caption">VOID Broccoli Oversized — Jacked & Heavyweight</div>
+          </div>
+          <div class="carousel-slide">
+            <img src="assets/campaign-monk-gym.png" alt="VOID Monk Oversized - Gym Edition">
+            <div class="slide-caption">VOID Monk Oversized — Pure Discipline, No Excuses</div>
+          </div>
+          <div class="carousel-slide">
+            <img src="assets/campaign-cat-gym.png" alt="VOID Bad Cat Oversized - Gym Edition">
+            <div class="slide-caption">VOID Bad Cat Oversized — Hungry For More</div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <button class="carousel-btn prev-btn" id="carouselPrevBtn" aria-label="Slide Anterior">❮</button>
+        <button class="carousel-btn next-btn" id="carouselNextBtn" aria-label="Próximo Slide">❯</button>
+
+        <!-- Dots -->
+        <div class="carousel-dots" id="carouselDots">
+          <!-- Preenchido via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews Section -->
+  <section class="reviews-section" id="reviews">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-subtitle">// RATED BY THE CREW</span>
+        <h2 class="section-title">OPINIÕES REAIS</h2>
+        <p class="section-desc">O feedback de quem já garante a modelagem robusta da VOID nas ruas.</p>
+      </div>
+
+      <div class="reviews-grid">
+        <!-- Review 1 -->
+        <div class="review-card">
+          <div class="review-meta">
+            <span class="review-stars">★★★★★</span>
+            <span class="review-verified">✓ Compra Confirmada</span>
+          </div>
+          <p class="review-quote">"Sem palavras para esse algodão pesado. O caimento oversized é perfeito, não é aquele largo desajeitado. A gola de 3cm pesada faz toda a diferença!"</p>
+          <div class="review-author">
+            <span class="author-initials">M.S.</span>
+            <div class="author-details">
+              <span class="author-name">Mateus Silva</span>
+              <span class="author-location">São Paulo, SP</span>
+            </div>
+          </div>
+        </div>
+        <!-- Review 2 -->
+        <div class="review-card">
+          <div class="review-meta">
+            <span class="review-stars">★★★★★</span>
+            <span class="review-verified">✓ Compra Confirmada</span>
+          </div>
+          <p class="review-quote">"O print da estampa de tigre nas costas é absurdo de nítido e pesado. Já lavei 4 vezes e continua 100% igual. Vale cada centavo do drop!"</p>
+          <div class="review-author">
+            <span class="author-initials">G.L.</span>
+            <div class="author-details">
+              <span class="author-name">Gabriela Lima</span>
+              <span class="author-location">Curitiba, PR</span>
+            </div>
+          </div>
+        </div>
+        <!-- Review 3 -->
+        <div class="review-card">
+          <div class="review-meta">
+            <span class="review-stars">★★★★★</span>
+            <span class="review-verified">✓ Compra Confirmada</span>
+          </div>
+          <p class="review-quote">"Peguei o Combo com 3 camisetas. O desconto fica insano de bom e o frete grátis salvou muito. Recomendo demais a VOID!"</p>
+          <div class="review-author">
+            <span class="author-initials">K.O.</span>
+            <div class="author-details">
+              <span class="author-name">Kevin Oliveira</span>
+              <span class="author-location">Belo Horizonte, MG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Accordion Section -->
+  <section class="faq-section" id="faq">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-subtitle">// DÚVIDAS FREQUENTES</span>
+        <h2 class="section-title">FAQ</h2>
+        <p class="section-desc">Tem alguma dúvida sobre os envios, tamanhos ou formato dos drops? Leia abaixo.</p>
+      </div>
+
+      <div class="faq-accordion">
+        <!-- FAQ 1 -->
+        <div class="faq-item" id="faqItem1">
+          <button class="faq-trigger" aria-expanded="false" aria-controls="faqAnswer1">
+            <span>Qual é a tabela de tamanhos e modelagem?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" id="faqAnswer1" role="region" aria-labelledby="faqItem1">
+            <p>Nossa modelagem é <strong>oversized autêntica</strong>. Se você prefere o caimento streetwear moderno (ombros caídos e mangas mais longas), peça o seu tamanho padrão. Se deseja um caimento mais padrão de camiseta normal, sugerimos comprar um tamanho menor. Uma tabela detalhada de medidas fica disponível nas fotos.</p>
+          </div>
+        </div>
+        <!-- FAQ 2 -->
+        <div class="faq-item" id="faqItem2">
+          <button class="faq-trigger" aria-expanded="false" aria-controls="faqAnswer2">
+            <span>Quando os produtos serão enviados?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" id="faqAnswer2" role="region" aria-labelledby="faqItem2">
+            <p>Por se tratar de um <strong>drop exclusivo e limitado</strong>, as postagens ocorrem em até 3 dias úteis após a confirmação do pagamento. Você receberá o código de rastreamento no seu e-mail cadastrado automaticamente.</p>
+          </div>
+        </div>
+        <!-- FAQ 3 -->
+        <div class="faq-item" id="faqItem3">
+          <button class="faq-trigger" aria-expanded="false" aria-controls="faqAnswer3">
+            <span>Haverá reposição (restock) deste drop?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" id="faqAnswer3" role="region" aria-labelledby="faqItem3">
+            <p><strong>Não. WE DON'T RESTOCK.</strong> Uma vez esgotado o estoque deste lote, este drop está permanentemente encerrado. Os novos drops trarão outras cores, conceitos e estampas colecionáveis.</p>
+          </div>
+        </div>
+        <!-- FAQ 4 -->
+        <div class="faq-item" id="faqItem4">
+          <button class="faq-trigger" aria-expanded="false" aria-controls="faqAnswer4">
+            <span>Quais são as formas de pagamento disponíveis?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" id="faqAnswer4" role="region" aria-labelledby="faqItem4">
+            <p>Aceitamos pagamentos via PIX (com confirmação e processamento instantâneo) e todos os cartões de crédito em até 6x sem juros.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide-out Shopping Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cartOverlay"></div>
+  <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <div class="cart-header">
+      <h2 id="cartTitle">// SEU DROP</h2>
+      <button class="cart-close-btn" id="cartClose" aria-label="Fechar Carrinho">✕</button>
+    </div>
+    
+    <div class="cart-body">
+      <!-- Carrinho Vazio -->
+      <div class="cart-empty-state" id="cartEmptyState">
+        <p class="empty-text">SEU CARRINHO ESTÁ VAZIO.</p>
+        <a href="#produtos" class="btn-primary" id="btnContinueShopping">IR PARA OS PRODUTOS</a>
+      </div>
+
+      <!-- Carrinho com Itens -->
+      <div class="cart-filled-state" id="cartFilledState" style="display: none;">
+        <div class="cart-free-shipping-progress">
+          <p id="freeShippingStatus">Você ganhou <strong>FRETE GRÁTIS!</strong></p>
+          <div class="progress-bar-bg small">
+            <div class="progress-bar-fill green" id="freeShippingBar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="cart-items-list" id="cartItemsContainer">
+          <!-- Preenchido via JS -->
+        </div>
+
+        <div class="cart-summary">
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <span id="cartSubtotal">R$ 269,90</span>
+          </div>
+          <div class="summary-row">
+            <span>Frete:</span>
+            <span id="cartShipping">GRÁTIS</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total:</span>
+            <span id="cartTotal">R$ 269,90</span>
+          </div>
+        </div>
+
+        <button class="btn-checkout" id="checkoutBtn">FINALIZAR COMPRA ➔</button>
+        <p class="checkout-guarantee">🛡️ Compra segura. Processamento criptografado.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Fullscreen Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" role="dialog" aria-modal="true">
+    <button class="mobile-menu-close-btn" id="mobileMenuClose" aria-label="Fechar Menu">✕</button>
+    <nav class="mobile-menu-nav">
+      <a href="#produtos" class="mobile-menu-link" onclick="window.closeMobileMenu()">THE DROP</a>
+      <a href="#beneficios" class="mobile-menu-link" onclick="window.closeMobileMenu()">QUALIDADE</a>
+      <a href="#lifestyle" class="mobile-menu-link" onclick="window.closeMobileMenu()">LIFESTYLE VIBE</a>
+      <a href="#faq" class="mobile-menu-link" onclick="window.closeMobileMenu()">FAQ</a>
+    </nav>
+    <div class="mobile-menu-footer">
+      <p class="mobile-menu-slogan">VOID IS A STATE OF MIND.</p>
+      <div class="mobile-menu-socials">
+        <a href="#" class="social-link-small">INSTAGRAM</a>
+        <a href="#" class="social-link-small">TIKTOK</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Shopify-Style Product Page Experience (Full Screen Overlay) -->
+  <div class="product-page-overlay" id="productPageOverlay" role="dialog" aria-modal="true">
+    <!-- Conteúdo dinâmico injetado via JavaScript -->
+  </div>
+
+  <!-- Simulated Checkout Success Modal -->
+  <div class="checkout-modal-overlay" id="checkoutModalOverlay">
+    <div class="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-success-icon">✓</div>
+      <h3 id="modalTitle">PEDIDO ENVIADO AO VAZIO!</h3>
+      <p class="modal-desc">Sua reserva foi processada com sucesso no drop da VOID Crew. Enviamos as instruções de pagamento PIX e rastreamento para o seu e-mail.</p>
+      <div class="modal-order-number">Código do Pedido: <span id="modalOrderId">#VOID-8921-2026</span></div>
+      <button class="btn-primary" id="modalCloseBtn">CONCLUÍDO</button>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification System (FOMO & Social Proof) -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Minimalist Footer -->
+  <footer class="main-footer" id="mainFooter">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="footer-logo">VOID</span>
+        <p class="footer-tagline">WE DON'T FIT THE CROWD. WE OWN THE VOID.</p>
+      </div>
+      <div class="footer-links-grid">
+        <div class="footer-column">
+          <h4>// CONCEITO</h4>
+          <ul>
+            <li><a href="#hero">Quem Somos</a></li>
+            <li><a href="#beneficios">Tecido Heavy</a></li>
+            <li><a href="#lifestyle">As Ruas</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>// SUPORTE</h4>
+          <ul>
+            <li><a href="#faq">Trocas & Devoluções</a></li>
+            <li><a href="#faq">Prazo de Envio</a></li>
+            <li><a href="#faq">Fale Conosco</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 VOID CREW. Drop Lote 01. Todos os direitos reservados. Feito para rebeldes minimalistas.</p>
+    </div>
+  </footer>
+
+  <!-- Lógica Principal -->
+  <script src="app.js"></script>
+</body>
+</html>
