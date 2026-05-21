@@ -677,7 +677,8 @@ body {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
-  transition: opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  opacity: 1;
+  transition: opacity 0.2s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .product-card-thumb:hover img {
   transform: scale(1.04);
