@@ -48,27 +48,7 @@ async function initShopify() {
   try {
     const res = await fetch('/api/config');
     const config = await res.json();
-    
-    const cleanValue = (val) => {
-      if (!val) return '';
-      let cleaned = val.trim();
-      if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-        cleaned = cleaned.slice(1, -1);
-      }
-      if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
-        cleaned = cleaned.slice(1, -1);
-      }
-      return cleaned.trim();
-    };
-
-    SHOPIFY_DOMAIN = cleanValue(config.domain);
-    SHOPIFY_ACCESS_TOKEN = cleanValue(config.accessToken);
-
-    if (!SHOPIFY_DOMAIN || !SHOPIFY_ACCESS_TOKEN) {
-      console.warn("[SHOPIFY CONFIG] Variáveis de ambiente do Shopify não configuradas.");
-      return false;
-    }
-    return true;
+    return !!config.configured;
   } catch (err) {
     console.error("Falha ao ler endpoint de configuração /api/config:", err);
     return false;
@@ -76,25 +56,23 @@ async function initShopify() {
 }
 
 async function shopifyQuery(query, variables = {}) {
-  const url = `https://${SHOPIFY_DOMAIN}/api/2024-04/graphql.json`;
-  const response = await fetch(url, {
+  const response = await fetch('/api/shopify', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_ACCESS_TOKEN
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({ query, variables })
   });
   
   if (!response.ok) {
     const text = await response.text();
-    console.error("HTTP error response:", response.status, text);
+    console.error("HTTP error response from Shopify proxy:", response.status, text);
     throw new Error(`HTTP ${response.status}: ${text || response.statusText}`);
   }
   
   const result = await response.json();
   if (result.errors) {
-    console.error("GraphQL errors:", result.errors);
+    console.error("GraphQL errors from Shopify proxy:", result.errors);
     throw new Error(result.errors[0].message);
   }
   return result.data;

@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -42,7 +43,7 @@ const MIME_TYPES = {
 http.createServer((req, res) => {
   let safeUrl = req.url.split('?')[0];
   
-  // Endpoint de configuração para expor variáveis de ambiente de forma segura para o front-end
+  // Endpoint de configuração (informa apenas se o Shopify está devidamente configurado, sem expor chaves sensíveis)
   if (safeUrl === '/api/config') {
     res.writeHead(200, { 
       'Content-Type': 'application/json',
@@ -59,10 +60,79 @@ http.createServer((req, res) => {
       }
       return cleaned.trim();
     };
+    const domain = cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN);
+    const token = cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN);
     res.end(JSON.stringify({
-      domain: cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN),
-      accessToken: cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN)
+      configured: !!(domain && token)
     }));
+    return;
+  }
+
+  // Proxy seguro para o Shopify Storefront API (evita bloqueios de ad-blockers, CORS e expiração no front-end)
+  if (safeUrl === '/api/shopify' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const parsed = JSON.parse(body);
+        
+        const cleanValue = (val) => {
+          if (!val) return '';
+          let cleaned = val.trim();
+          if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+            cleaned = cleaned.slice(1, -1);
+          }
+          if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
+            cleaned = cleaned.slice(1, -1);
+          }
+          return cleaned.trim();
+        };
+
+        const domain = cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN);
+        const token = cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN);
+
+        if (!domain || !token) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ errors: [{ message: 'Credenciais do Shopify não configuradas no servidor.' }] }));
+          return;
+        }
+
+        const shopifyUrl = `https://${domain}/api/2024-04/graphql.json`;
+        const postData = JSON.stringify({
+          query: parsed.query,
+          variables: parsed.variables || {}
+        });
+
+        const shopifyReq = https.request(shopifyUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Shopify-Storefront-Access-Token': token,
+            'Content-Length': Buffer.byteLength(postData)
+          }
+        }, (shopifyRes) => {
+          res.writeHead(shopifyRes.statusCode, {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          });
+          shopifyRes.pipe(res);
+        });
+
+        shopifyReq.on('error', (err) => {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ errors: [{ message: `Erro ao conectar com Shopify: ${err.message}` }] }));
+        });
+
+        shopifyReq.write(postData);
+        shopifyReq.end();
+
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ errors: [{ message: `Corpo de requisição inválido: ${err.message}` }] }));
+      }
+    });
     return;
   }
 
