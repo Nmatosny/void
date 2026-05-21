@@ -48,9 +48,20 @@ http.createServer((req, res) => {
       'Content-Type': 'application/json',
       'Cache-Control': 'no-cache, no-store, must-revalidate'
     });
+    const cleanValue = (val) => {
+      if (!val) return '';
+      let cleaned = val.trim();
+      if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+        cleaned = cleaned.slice(1, -1);
+      }
+      if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
+        cleaned = cleaned.slice(1, -1);
+      }
+      return cleaned.trim();
+    };
     res.end(JSON.stringify({
-      domain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || '',
-      accessToken: process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || ''
+      domain: cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN),
+      accessToken: cleanValue(process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN)
     }));
     return;
   }
