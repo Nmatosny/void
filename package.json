@@ -1,0 +1,16 @@
+{
+  "name": "void-crew-landing",
+  "version": "2.0.5",
+  "description": "VOID CREW landing page - Light Luxury Brutalist streetwear drop storefront.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "streetwear",
+    "brutalist",
+    "shopify"
+  ],
+  "author": "Nmatosny",
+  "license": "ISC"
+}
