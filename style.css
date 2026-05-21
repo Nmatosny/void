@@ -677,10 +677,21 @@ body {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
-  opacity: 1;
-  transition: opacity 0.2s ease, transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-.product-card-thumb:hover img {
+.card-back-img {
+  opacity: 1;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.card-front-img {
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.product-card-thumb:hover .card-back-img {
+  opacity: 0;
+  transform: scale(1.04);
+}
+.product-card-thumb:hover .card-front-img {
+  opacity: 1;
   transform: scale(1.04);
 }
 .product-card-details {

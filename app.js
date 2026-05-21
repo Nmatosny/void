@@ -445,6 +445,7 @@ function renderCatalog() {
 
   catalogContainer.innerHTML = PRODUCTS.map((p, index) => {
     const backImage = p.images[0] || 'assets/placeholder.png';
+    const frontImage = p.images[1] || p.images[0] || 'assets/placeholder.png';
     const isAvailable = p.available;
     
     // Ficha técnica assimétrica estilo ateliê
@@ -460,7 +461,8 @@ function renderCatalog() {
         ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
         <div class="product-card-thumb" title="Ver detalhes de ${p.name}">
           <span class="product-editorial-index">${editorialIndex}</span>
-          <img src="${backImage}" alt="${p.name}" class="card-cycle-img" data-images='${JSON.stringify(p.images)}' data-idx="0">
+          <img src="${backImage}" alt="${p.name} Costas" class="card-back-img">
+          <img src="${frontImage}" alt="${p.name} Frente" class="card-front-img">
           <div class="product-tech-spec">${techSpec}</div>
           ${isAvailable ? `<button class="quick-add-btn" onclick="window.addProductToCart('${p.id}', 'M'); event.stopPropagation();">COMPRA RÁPIDA (TAM M) ➔</button>` : ''}
         </div>
@@ -479,46 +481,6 @@ function renderCatalog() {
     `;
   }).join('');
 
-  initCardImageCycle();
-}
-
-function initCardImageCycle() {
-  document.querySelectorAll('.card-cycle-img').forEach(img => {
-    const images = JSON.parse(img.dataset.images || '[]');
-    if (images.length < 2) return;
-
-    let timer = null;
-    let idx = 0;
-
-    img.addEventListener('mouseenter', () => {
-      idx = 1;
-      img.style.opacity = '0';
-      setTimeout(() => {
-        img.src = images[idx];
-        img.style.opacity = '1';
-      }, 200);
-
-      timer = setInterval(() => {
-        idx = (idx + 1) % images.length;
-        img.style.opacity = '0';
-        setTimeout(() => {
-          img.src = images[idx];
-          img.style.opacity = '1';
-        }, 200);
-      }, 1200);
-    });
-
-    img.addEventListener('mouseleave', () => {
-      clearInterval(timer);
-      timer = null;
-      idx = 0;
-      img.style.opacity = '0';
-      setTimeout(() => {
-        img.src = images[0];
-        img.style.opacity = '1';
-      }, 200);
-    });
-  });
 }
 
 function updateFlagshipSection() {
