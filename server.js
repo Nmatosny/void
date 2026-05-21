@@ -4,6 +4,30 @@ const path = require('path');
 
 const PORT = 8080;
 
+// Carregar variáveis do arquivo .env se ele existir
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  try {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    envContent.split(/\r?\n/).forEach(line => {
+      // Ignorar comentários e linhas vazias
+      if (line.trim().startsWith('#') || !line.includes('=')) return;
+      const delimiterIndex = line.indexOf('=');
+      const key = line.substring(0, delimiterIndex).trim();
+      let value = line.substring(delimiterIndex + 1).trim();
+      // Remover aspas simples ou duplas
+      if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
+      if (value.startsWith("'") && value.endsWith("'")) value = value.slice(1, -1);
+      
+      if (key && !process.env[key]) {
+        process.env[key] = value;
+      }
+    });
+  } catch (err) {
+    console.error('Erro ao ler o arquivo .env:', err);
+  }
+}
+
 const MIME_TYPES = {
   '.html': 'text/html',
   '.css': 'text/css',
@@ -16,8 +40,22 @@ const MIME_TYPES = {
 };
 
 http.createServer((req, res) => {
-  // Tratamento básico para evitar navegação fora da pasta do projeto
   let safeUrl = req.url.split('?')[0];
+  
+  // Endpoint de configuração para expor variáveis de ambiente de forma segura para o front-end
+  if (safeUrl === '/api/config') {
+    res.writeHead(200, { 
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate'
+    });
+    res.end(JSON.stringify({
+      domain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || '',
+      accessToken: process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || ''
+    }));
+    return;
+  }
+
+  // Tratamento básico para evitar navegação fora da pasta do projeto
   let filePath = path.join(__dirname, safeUrl === '/' ? 'index.html' : safeUrl);
   
   let extname = path.extname(filePath);

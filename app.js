@@ -1,172 +1,1178 @@
 /* ==========================================================================
-   VOID CREW — INTERATIVE STOREFRONT SYSTEM
-   Lógica Comercial, FOMO, Bundles e Carrinho Simulado
+   VOID CREW — PRODUCTION HEADLESS SHOPIFY STOREFRONT SYSTEM
+   Integração Direta com Shopify Storefront API (GraphQL)
+   Carrinho Real, Checkout Seguro, Produtos Reais e Inventário Dinâmico
    ========================================================================== */
 
-// 1. BANCO DE DADOS DE PRODUTOS REAIS (6 MODELOS EXCLUSIVOS)
-const PRODUCTS = [
-  {
-    id: "tiger",
-    name: "VOID Tiger Oversized",
-    colorText: "Preto Mineral",
-    badge: "BEST SELLER",
-    price: 109.90,
-    oldPrice: 159.90,
-    tagline: "VOID WAS NOT MADE TO FIT THE CROWD",
-    images: [
-      "assets/product-tiger-back.png",      // 1. BACK PRINT (Main Hero)
-      "assets/product-tiger-front.png",     // 2. FRONT VIEW
-      "assets/product-tiger-graphic.png",   // 3. Detail close-up
-      "assets/campaign-tiger-gym.png",      // 4. Lifestyle/gym photo
-      "assets/product-tiger-logo.png"       // 5. Fabric/detail shot
-    ],
-    description: "A peça central do nosso drop. Com estampa maciça nas costas apresentando o tigre de ferro, raios roxos vulcanizados e logotipo frontal em tipografia distressed. Modelagem robusta inspirada no streetwear clássico dos anos 90.",
-    details: "• Algodão heavyweight 220g/m²\n• Fio penteado 30.1 premium\n• Modelagem oversized autêntica\n• Gola pesada de ribana canelada 3cm\n• Estampa maciça resistente em Silk Screen"
-  },
-  {
-    id: "samurai",
-    name: "VOID Samurai Oversized",
-    colorText: "Preto Deep / Azul Neon",
-    badge: "NEW DROP",
-    price: 109.90,
-    oldPrice: 159.90,
-    tagline: "FROM WARRIOR TO WARRIOR",
-    images: [
-      "assets/product-samurai-back.png",    // 1. BACK PRINT (Main Hero)
-      "assets/product-samurai-front.png",   // 2. FRONT VIEW
-      "assets/product-samurai-graphic.png", // 3. Detail close-up
-      "assets/product-samurai-real.jpg",    // 4. Lifestyle/gym photo
-      "assets/product-samurai-logo.png"     // 5. Fabric/detail shot
-    ],
-    description: "Inspirada na armadura e disciplina dos antigos guerreiros samurais. A estampa traseira traz traços neo-tradicionais em azul néon contrastante com elementos tipográficos distressed nas mangas e peito. Caimento estruturado.",
-    details: "• Tecido premium amaciado pré-encolhido\n• Gramatura robusta de 220g/m²\n• Modelagem com ombros caídos e mangas amplas\n• Gola de 3cm que não laceia\n• Estampa com toque zero de alta durabilidade"
-  },
-  {
-    id: "monk",
-    name: "VOID Monk Oversized",
-    colorText: "Preto Coal / White Ink",
-    badge: "LIMITED",
-    price: 109.90,
-    oldPrice: 159.90,
-    tagline: "NOT MADE TO FIT / ONLY DISCIPLINE",
-    images: [
-      "assets/product-monk-back.png",       // 1. BACK PRINT (Main Hero)
-      "assets/product-monk-front.png",      // 2. FRONT VIEW
-      "assets/product-monk-graphic.png",    // 3. Detail close-up
-      "assets/campaign-monk-gym.png",       // 4. Lifestyle/gym photo
-      "assets/product-monk-logo.png"        // 5. Fabric/detail shot
-    ],
-    description: "Uma homenagem à estética minimalista e brutalista oriental. A arte traseira do monge da disciplina é impressa em Silk Screen de alta densidade na cor branca fria sobre fundo preto coal. Exclusividade pura.",
-    details: "• 100% Algodão Heavyweight Penteado\n• Modelagem oversized quadrada (boxy fit)\n• Costuras reforçadas de ombro a ombro\n• Acabamento em ribana grossa de 3cm\n• Silk Screen industrial de longa durabilidade"
-  },
-  {
-    id: "broccoli",
-    name: "VOID Brocolis Oversized",
-    colorText: "Preto Heavy / Green Neon",
-    badge: "HEAVYWEIGHT",
-    price: 109.90,
-    oldPrice: 159.90,
-    tagline: "BRÓCOLIS É O SEGREDO / STRONG",
-    images: [
-      "assets/product-broccoli-back.png",   // 1. BACK PRINT (Main Hero)
-      "assets/product-broccoli-front.png",  // 2. FRONT VIEW
-      "assets/product-broccoli-back.png",   // 3. Detail close-up
-      "assets/campaign-broccoli-gym.png",   // 4. Lifestyle/gym photo
-      "assets/product-broccoli-front.png"   // 5. Fabric/detail shot
-    ],
-    description: "Brócolis é a fonte de poder secreta da crew. Estampa irônica e agressiva com o brócolis em chamas néon verde nas costas e logo de metal distorcido no peitoral. Estilo e impacto brutais.",
-    details: "• Algodão amaciado de alta costura\n• Caimento perfeito para treinos intensos\n• Modelagem oversized autêntica streetwear\n• Detalhes em Silk Screen de alta fixação\n• Tecido ultra robusto de alta durabilidade"
-  },
-  {
-    id: "cat",
-    name: "VOID Bad Cat Oversized",
-    colorText: "Preto Shadow / Pink Neon",
-    badge: "LIMITED",
-    price: 109.90,
-    oldPrice: 159.90,
-    tagline: "BAD CAT / STRONG. FEMINE. HUNGRY.",
-    images: [
-      "assets/product-cat-back.png",        // 1. BACK PRINT (Main Hero)
-      "assets/product-cat-front.png",       // 2. FRONT VIEW
-      "assets/product-cat-back.png",        // 3. Detail close-up
-      "assets/campaign-cat-gym.png",        // 4. Lifestyle/gym photo
-      "assets/product-cat-front.png"        // 5. Fabric/detail shot
-    ],
-    description: "Visual rebelde e atitude com a estampa traseira do Bad Cat em contornos rosa néon sobrepostos. Uma modelagem oversized confortável com gola grossa que exala o espírito underground das ruas das grandes cidades.",
-    details: "• Malha de algodão premium penteada 30.1\n• Gramatura robusta com caimento impecável\n• Gola de ribana pesada e reforçada de 3cm\n• Impressão de alta precisão que não desbota\n• Peça lavada e pré-encolhida de fábrica"
-  },
-  {
-    id: "dragon",
-    name: "VOID Dragon Oversized",
-    colorText: "Off-White Creme",
-    badge: "EXCLUSIVE",
-    price: 109.90,
-    oldPrice: 159.90,
-    tagline: "DISCIPLINE IS POWER / 規律は力",
-    images: [
-      "assets/product-dragon-back.png",     // 1. BACK PRINT (Main Hero)
-      "assets/product-dragon-front.png",    // 2. FRONT VIEW
-      "assets/campaign-dragon-front.png",   // 3. Detail close-up
-      "assets/campaign-tiger-gym.png",      // 4. Lifestyle/gym photo
-      "assets/product-dragon-front.png"     // 5. Fabric/detail shot
-    ],
-    description: "O único modelo Off-White do drop. Apresenta o dragão da disciplina impressa nas costas em tinta vermelha e carvão com tipografia oriental. Perfeito para contraste visual na academia e no rolê urbano.",
-    details: "• Tecido de algodão heavyweight encorpado Off-White\n• Ribana de gola de 3cm pesada e canelada\n• Estampa com tinta industrial de alta cobertura\n• Corte streetwear amplo e autêntico\n• Costuras laterais e ombros reforçados"
-  }
-];
+// 1. ESTADO GLOBAL DA APLICAÇÃO
+let SHOPIFY_DOMAIN = "";
+let SHOPIFY_ACCESS_TOKEN = "";
+let PRODUCTS = [];
+let shoppingCart = [];
+let currentProductPageSize = "M";
 
-// 2. CONFIGURAÇÕES DOS COMBOS COMERCIAIS
-const COMBOS = {
-  "1": {
-    id: 1,
-    name: "1 CAMISETA",
-    price: 109.90,
-    itemCount: 1,
-    shippingFree: false,
-    savingsText: "Sem frete grátis"
-  },
-  "2": {
-    id: 2,
-    name: "2 CAMISETAS (PACK)",
-    price: 199.90,
-    itemCount: 2,
-    shippingFree: false,
-    savingsText: "Economize R$ 19,90"
-  },
-  "3": {
-    id: 3,
-    name: "3 CAMISETAS + FRETE GRÁTIS",
-    price: 269.90,
-    itemCount: 3,
-    shippingFree: true,
-    savingsText: "Economize R$ 59,80 + Frete Grátis"
+// Injetar estilos de animação de loading e utilitários
+const style = document.createElement('style');
+style.innerHTML = `
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner-spin { animation: spin 0.8s linear infinite; }
+`;
+document.head.appendChild(style);
+
+// 2. INICIALIZAÇÃO DA APLICAÇÃO
+document.addEventListener("DOMContentLoaded", async () => {
+  initCountdown();
+  initFaqAccordion();
+  initMobileMenu();
+  initCarousel();
+  initHeaderScroll();
+  initDiscountSimulator();
+  initSizeGuideEvents();
+  initScrollRevealAndParallax();
+
+  const configured = await initShopify();
+  if (configured) {
+    await fetchShopifyProducts();
+    await initShopifyCart();
+  } else {
+    renderConfigWarning();
+  }
+
+  initCartEvents();
+});
+
+// ==========================================================================
+// A. INICIALIZAÇÃO E CLIENTE GRAPHQL DO SHOPIFY
+// ==========================================================================
+async function initShopify() {
+  try {
+    const res = await fetch('/api/config');
+    const config = await res.json();
+    
+    SHOPIFY_DOMAIN = config.domain || "";
+    SHOPIFY_ACCESS_TOKEN = config.accessToken || "";
+
+    if (!SHOPIFY_DOMAIN || !SHOPIFY_ACCESS_TOKEN) {
+      console.warn("[SHOPIFY CONFIG] Variáveis de ambiente do Shopify não configuradas.");
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("Falha ao ler endpoint de configuração /api/config:", err);
+    return false;
+  }
+}
+
+async function shopifyQuery(query, variables = {}) {
+  const url = `https://${SHOPIFY_DOMAIN}/api/2024-04/graphql.json`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': SHOPIFY_ACCESS_TOKEN
+    },
+    body: JSON.stringify({ query, variables })
+  });
+  
+  if (!response.ok) {
+    const text = await response.text();
+    console.error("HTTP error response:", response.status, text);
+    throw new Error(`HTTP ${response.status}: ${text || response.statusText}`);
+  }
+  
+  const result = await response.json();
+  if (result.errors) {
+    console.error("GraphQL errors:", result.errors);
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+}
+
+// ==========================================================================
+// B. CONSULTAS E MUTAÇÕES GRAPHQL (STOREFRONT API)
+// ==========================================================================
+const FETCH_PRODUCTS_QUERY = `
+  query getProducts {
+    products(first: 20) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          descriptionHtml
+          availableForSale
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 5) {
+            edges {
+              node {
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 20) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                selectedOptions {
+                  name
+                  value
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const GET_CART_QUERY = `
+  query getCart($cartId: ID!) {
+    cart(id: $cartId) {
+      id
+      checkoutUrl
+      cost {
+        totalAmount {
+          amount
+          currencyCode
+        }
+        subtotalAmount {
+          amount
+          currencyCode
+        }
+        totalTaxAmount {
+          amount
+          currencyCode
+        }
+      }
+      lines(first: 100) {
+        edges {
+          node {
+            id
+            quantity
+            merchandise {
+              ... on ProductVariant {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                }
+                product {
+                  id
+                  title
+                  images(first: 1) {
+                    edges {
+                      node {
+                        url
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const CART_CREATE_MUTATION = `
+  mutation cartCreate($input: CartInput!) {
+    cartCreate(input: $input) {
+      cart {
+        id
+        checkoutUrl
+        cost {
+          totalAmount {
+            amount
+          }
+          subtotalAmount {
+            amount
+          }
+        }
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price {
+                    amount
+                  }
+                  product {
+                    title
+                    images(first: 1) {
+                      edges {
+                        node {
+                          url
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const CART_LINES_ADD_MUTATION = `
+  mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+    cartLinesAdd(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+        checkoutUrl
+        cost {
+          totalAmount {
+            amount
+          }
+          subtotalAmount {
+            amount
+          }
+        }
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price {
+                    amount
+                  }
+                  product {
+                    title
+                    images(first: 1) {
+                      edges {
+                        node {
+                          url
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const CART_LINES_UPDATE_MUTATION = `
+  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+        checkoutUrl
+        cost {
+          totalAmount {
+            amount
+          }
+          subtotalAmount {
+            amount
+          }
+        }
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price {
+                    amount
+                  }
+                  product {
+                    title
+                    images(first: 1) {
+                      edges {
+                        node {
+                          url
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const CART_LINES_REMOVE_MUTATION = `
+  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart {
+        id
+        checkoutUrl
+        cost {
+          totalAmount {
+            amount
+          }
+          subtotalAmount {
+            amount
+          }
+        }
+        lines(first: 100) {
+          edges {
+            node {
+              id
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  price {
+                    amount
+                  }
+                  product {
+                    title
+                    images(first: 1) {
+                      edges {
+                        node {
+                          url
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// ==========================================================================
+// C. BUSCA E RENDERIZAÇÃO DO CATÁLOGO DINÂMICO REAL
+// ==========================================================================
+async function fetchShopifyProducts() {
+  try {
+    const data = await shopifyQuery(FETCH_PRODUCTS_QUERY);
+    
+    PRODUCTS = data.products.edges.map(edge => {
+      const node = edge.node;
+      const price = parseFloat(node.priceRange.minVariantPrice.amount);
+      const firstVariant = node.variants.edges[0]?.node;
+      const oldPrice = firstVariant?.compareAtPrice ? parseFloat(firstVariant.compareAtPrice.amount) : price * 1.35;
+
+      const variants = node.variants.edges.map(ve => {
+        const v = ve.node;
+        const sizeOption = v.selectedOptions.find(o => o.name.toLowerCase() === 'tamanho' || o.name.toLowerCase() === 'size');
+        return {
+          id: v.id,
+          title: v.title,
+          price: parseFloat(v.price.amount),
+          compareAtPrice: v.compareAtPrice ? parseFloat(v.compareAtPrice.amount) : null,
+          size: sizeOption ? sizeOption.value : v.title,
+          available: v.availableForSale
+        };
+      });
+
+      // Extrair tags ou criar badges baseados no handle
+      let badge = "";
+      if (node.handle.includes("tiger") || node.handle.includes("best")) {
+        badge = "BEST SELLER";
+      } else if (node.handle.includes("new") || node.handle.includes("samurai")) {
+        badge = "NEW DROP";
+      } else if (!node.availableForSale) {
+        badge = "ESGOTADO";
+      } else if (variants.length <= 2) {
+        badge = "LIMITED LOTE 01";
+      }
+
+      return {
+        id: node.id,
+        handle: node.handle,
+        name: node.title,
+        badge: badge,
+        price: price,
+        oldPrice: oldPrice,
+        images: node.images.edges.map(e => e.node.url),
+        description: node.description,
+        details: node.descriptionHtml,
+        variants: variants,
+        available: node.availableForSale
+      };
+    });
+
+    renderCatalog();
+    updateFlagshipSection();
+  } catch (err) {
+    console.error("Erro ao puxar catálogo do Shopify:", err);
+    renderErrorCatalog(err.message);
+  }
+}
+
+function renderCatalog() {
+  const catalogContainer = document.getElementById("productsCatalog");
+  if (!catalogContainer) return;
+
+  if (PRODUCTS.length === 0) {
+    catalogContainer.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px; font-family: monospace;">
+        Nenhum produto encontrado na sua coleção do Shopify.
+      </div>
+    `;
+    return;
+  }
+
+  catalogContainer.innerHTML = PRODUCTS.map((p, index) => {
+    const frontImage = p.images[1] || p.images[0] || 'assets/placeholder.png';
+    const backImage = p.images[0] || 'assets/placeholder.png';
+    const isAvailable = p.available;
+    
+    // Ficha técnica assimétrica estilo ateliê
+    const techSpec = p.name.toUpperCase().includes("TIGER")
+      ? "HEAVYCOTTON 220g/m² • FIT OVERSIZED 90s • COSTURA DE OMBRO REFORÇADA"
+      : "PREMIUM COTTON 200g/m² • OMBRO REBAIXADO • RIBANA CANELADA 3cm";
+
+    // Número editorial no topo do card
+    const editorialIndex = String(index + 1).padStart(2, '0') + '/';
+
+    return `
+      <div class="product-card ${!isAvailable ? 'sold-out' : ''}" id="product-${p.id.replace(/[^a-z0-9]/gi, '_')}" onclick="openProductPage('${p.id}')">
+        ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+        <div class="product-card-thumb" title="Ver detalhes de ${p.name}">
+          <span class="product-editorial-index">${editorialIndex}</span>
+          <img src="${frontImage}" alt="${p.name} Frente" class="front-img">
+          <img src="${backImage}" alt="${p.name} Costas" class="back-img" style="opacity: 0;">
+          <div class="product-tech-spec">${techSpec}</div>
+          ${isAvailable ? `<button class="quick-add-btn" onclick="window.addProductToCart('${p.id}', 'M'); event.stopPropagation();">COMPRA RÁPIDA (TAM M) ➔</button>` : ''}
+        </div>
+        <div class="product-card-details">
+          <h3 class="product-card-title">${p.name}</h3>
+          <div class="product-card-pricing">
+            <span class="product-old-price">R$ ${p.oldPrice.toFixed(2).replace('.', ',')}</span>
+            <span class="product-price">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
+          </div>
+          <div class="product-installments">6x de R$ ${(p.price / 6).toFixed(2).replace('.', ',')} s/juros</div>
+          <button class="product-card-btn" ${!isAvailable ? 'disabled' : ''} onclick="window.addProductToCart('${p.id}'); event.stopPropagation();">
+            ${isAvailable ? '+ ADICIONAR AO DROP' : 'ESGOTADO'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateFlagshipSection() {
+  const flagship = PRODUCTS[0];
+  if (!flagship) return;
+
+  const flagshipImg = document.getElementById("flagshipImage");
+  const flagshipTitle = document.querySelector(".flagship-title");
+  const flagshipDesc = document.querySelector(".flagship-description");
+
+  if (flagshipImg) flagshipImg.src = flagship.images[0] || flagshipImg.src;
+  if (flagshipTitle) flagshipTitle.textContent = flagship.name.toUpperCase();
+  if (flagshipDesc) flagshipDesc.textContent = flagship.description;
+}
+
+// ==========================================================================
+// D. SISTEMA DE CARRINHO DE COMPRAS REAL DO SHOPIFY
+// ==========================================================================
+async function initShopifyCart() {
+  const cartId = localStorage.getItem('shopify_cart_id');
+  if (cartId) {
+    try {
+      showLoadingToast("Carregando seu carrinho...");
+      const data = await shopifyQuery(GET_CART_QUERY, { cartId });
+      if (data && data.cart) {
+        syncCartWithShopify(data.cart);
+        hideLoadingToast();
+        return;
+      }
+    } catch (err) {
+      console.warn("Carrinho anterior expirado ou inválido. Criando novo...", err);
+    }
+  }
+  localStorage.removeItem('shopify_cart_id');
+  localStorage.removeItem('shopify_cart_checkout_url');
+  hideLoadingToast();
+  updateCartUI(null);
+}
+
+function syncCartWithShopify(cartData) {
+  if (!cartData) return;
+  localStorage.setItem('shopify_cart_id', cartData.id);
+  localStorage.setItem('shopify_cart_checkout_url', cartData.checkoutUrl);
+
+  shoppingCart = cartData.lines.edges.map(edge => {
+    const line = edge.node;
+    const variant = line.merchandise;
+    if (!variant) return null;
+    return {
+      lineId: line.id,
+      variantId: variant.id,
+      name: variant.product?.title || 'Produto Indisponível',
+      colorText: variant.title || '',
+      size: variant.title || '',
+      quantity: line.quantity,
+      price: variant.price ? parseFloat(variant.price.amount) : 0,
+      image: variant.product?.images?.edges[0]?.node.url || 'assets/placeholder.png'
+    };
+  }).filter(Boolean);
+
+  updateCartUI(cartData);
+}
+
+window.addProductToCart = async function(productId, size = 'M') {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
+
+  const variant = product.variants.find(v => v.size === size) || product.variants[0];
+  if (!variant) return;
+
+  showLoadingToast("Adicionando item ao drop...");
+
+  try {
+    const cartId = localStorage.getItem('shopify_cart_id');
+    if (!cartId) {
+      // Criar novo carrinho com o item
+      const data = await shopifyQuery(CART_CREATE_MUTATION, {
+        input: {
+          lines: [{ merchandiseId: variant.id, quantity: 1 }]
+        }
+      });
+      if (data && data.cartCreate && data.cartCreate.cart) {
+        syncCartWithShopify(data.cartCreate.cart);
+      } else {
+        throw new Error("Erro ao criar carrinho.");
+      }
+    } else {
+      try {
+        // Adicionar linha ao carrinho existente
+        const data = await shopifyQuery(CART_LINES_ADD_MUTATION, {
+          cartId,
+          lines: [{ merchandiseId: variant.id, quantity: 1 }]
+        });
+        if (data && data.cartLinesAdd && data.cartLinesAdd.cart) {
+          syncCartWithShopify(data.cartLinesAdd.cart);
+        } else {
+          throw new Error("Carrinho expirado ou inválido.");
+        }
+      } catch (errInner) {
+        console.warn("Falha ao adicionar ao carrinho existente (carrinho expirado). Criando novo...", errInner);
+        localStorage.removeItem('shopify_cart_id');
+        localStorage.removeItem('shopify_cart_checkout_url');
+        
+        const data = await shopifyQuery(CART_CREATE_MUTATION, {
+          input: {
+            lines: [{ merchandiseId: variant.id, quantity: 1 }]
+          }
+        });
+        if (data && data.cartCreate && data.cartCreate.cart) {
+          syncCartWithShopify(data.cartCreate.cart);
+        } else {
+          throw new Error("Erro ao criar carrinho após retry: " + errInner.message);
+        }
+      }
+    }
+    hideLoadingToast();
+    window.openCart();
+  } catch (err) {
+    console.error("Erro ao adicionar no Shopify Cart:", err);
+    showErrorToast("Item indisponível ou erro na conexão: " + err.message);
   }
 };
 
-// 3. ESTADO DA APLICAÇÃO (CARRINHO MULTI-ITEM)
-let shoppingCart = []; 
+window.changeQuantity = async function(lineId, currentQty, change) {
+  const cartId = localStorage.getItem('shopify_cart_id');
+  if (!cartId) return;
 
-// 4. SELETOR DE TAMANHOS SELECIONADOS POR PRODUTO
-const selectedSizes = {};
-PRODUCTS.forEach(p => {
-  selectedSizes[p.id] = "M"; // Padrão: M
-});
+  const newQty = currentQty + change;
+  showLoadingToast("Atualizando carrinho...");
 
-// 5. ELEMENTOS DOM PRINCIPAIS E INICIALIZAÇÃO
-document.addEventListener("DOMContentLoaded", () => {
-  initCountdown();
-  initStockUrgency();
-  renderCatalog();
-  initCartEvents();
-  initCarousel();
-  initFaqAccordion();
-  initToastsSystem();
-  initMobileMenu();
-});
+  try {
+    if (newQty <= 0) {
+      const data = await shopifyQuery(CART_LINES_REMOVE_MUTATION, {
+        cartId,
+        lineIds: [lineId]
+      });
+      syncCartWithShopify(data.cartLinesRemove.cart);
+    } else {
+      const data = await shopifyQuery(CART_LINES_UPDATE_MUTATION, {
+        cartId,
+        lines: [{ id: lineId, quantity: newQty }]
+      });
+      syncCartWithShopify(data.cartLinesUpdate.cart);
+    }
+    hideLoadingToast();
+  } catch (err) {
+    console.error("Erro ao alterar quantidade:", err);
+    showErrorToast("Erro ao alterar quantidade: " + err.message);
+    localStorage.removeItem('shopify_cart_id');
+    localStorage.removeItem('shopify_cart_checkout_url');
+    initShopifyCart();
+  }
+};
+
+window.removeItem = async function(lineId) {
+  const cartId = localStorage.getItem('shopify_cart_id');
+  if (!cartId) return;
+
+  showLoadingToast("Removendo item...");
+
+  try {
+    const data = await shopifyQuery(CART_LINES_REMOVE_MUTATION, {
+      cartId,
+      lineIds: [lineId]
+    });
+    syncCartWithShopify(data.cartLinesRemove.cart);
+    hideLoadingToast();
+  } catch (err) {
+    console.error("Erro ao remover item:", err);
+    showErrorToast("Erro ao remover item: " + err.message);
+    localStorage.removeItem('shopify_cart_id');
+    localStorage.removeItem('shopify_cart_checkout_url');
+    initShopifyCart();
+  }
+};
 
 // ==========================================================================
-// K. MENU MOBILE HAMBÚRGUER — FULLSCREEN OVERLAY
+// E. RENDERIZAR O CARRINHO SEGURO NA TELA (VALORES DO SHOPIFY)
 // ==========================================================================
+function updateCartUI(cartData) {
+  const cartBadge = document.getElementById("cartBadge");
+  const cartEmptyState = document.getElementById("cartEmptyState");
+  const cartFilledState = document.getElementById("cartFilledState");
+  const cartItemsContainer = document.getElementById("cartItemsContainer");
+  const freeShippingStatus = document.getElementById("freeShippingStatus");
+  const freeShippingBar = document.getElementById("freeShippingBar");
+
+  if (!cartBadge) return;
+
+  const totalQuantity = shoppingCart.reduce((sum, item) => sum + item.quantity, 0);
+
+  if (totalQuantity === 0 || !cartData) {
+    cartBadge.textContent = "0";
+    cartEmptyState.style.display = "block";
+    cartFilledState.style.display = "none";
+    return;
+  }
+
+  cartBadge.textContent = totalQuantity;
+  cartEmptyState.style.display = "none";
+  cartFilledState.style.display = "flex";
+
+  // Preencher itens reais no carrinho
+  cartItemsContainer.innerHTML = shoppingCart.map(item => `
+    <div class="cart-item-card">
+      <div class="cart-item-thumb">
+        <img src="${item.image}" alt="${item.name}">
+      </div>
+      <div class="cart-item-details">
+        <span class="cart-item-title">${item.name}</span>
+        <span class="cart-item-desc">Modelo: ${item.colorText} / Tam: ${item.size}</span>
+        <div class="cart-item-qty-selector">
+          <button class="qty-adjust-btn" onclick="window.changeQuantity('${item.lineId}', ${item.quantity}, -1)">-</button>
+          <span class="qty-number">${item.quantity}</span>
+          <button class="qty-adjust-btn" onclick="window.changeQuantity('${item.lineId}', ${item.quantity}, 1)">+</button>
+        </div>
+      </div>
+      <div class="cart-item-price-box">
+        <span class="cart-item-price">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+        <button class="cart-item-remove-btn" onclick="window.removeItem('${item.lineId}')" title="Excluir item">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Pegar custos oficiais vindos da API do Shopify (inclui descontos automáticos)
+  const subtotal = parseFloat(cartData.cost.subtotalAmount.amount);
+  const total = parseFloat(cartData.cost.totalAmount.amount);
+  const totalSavings = (totalQuantity * 109.90) - subtotal; // Simula a exibição da economia comercial
+
+  let summaryHTML = `
+    <div class="summary-row">
+      <span>Subtotal (Itens):</span>
+      <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+    </div>
+  `;
+
+  if (totalSavings > 0.01) {
+    summaryHTML += `
+      <div class="summary-row" style="color: var(--color-neon-green); font-weight: 600;">
+        <span>Desconto Progressivo Aplicado:</span>
+        <span>- R$ ${totalSavings.toFixed(2).replace('.', ',')}</span>
+      </div>
+    `;
+  }
+
+  // Lógica de Frete Grátis na interface
+  const shippingFree = totalQuantity >= 4;
+  const shippingCost = shippingFree ? 0 : 19.90;
+  const finalTotal = total + (shippingFree ? 0 : shippingCost);
+
+  summaryHTML += `
+    <div class="summary-row">
+      <span>Frete:</span>
+      <span>${shippingFree ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2).replace('.', ',')}`}</span>
+    </div>
+    <div class="summary-row total">
+      <span>Total:</span>
+      <span>R$ ${finalTotal.toFixed(2).replace('.', ',')}</span>
+    </div>
+  `;
+
+  document.querySelector(".cart-summary").innerHTML = summaryHTML;
+
+  // Atualizar Barra de Progresso do Frete Grátis
+  if (totalQuantity === 1) {
+    freeShippingStatus.innerHTML = `Adicione mais <strong>3 camisetas</strong> para ganhar <strong>FRETE GRÁTIS</strong>!`;
+    freeShippingBar.style.width = "25%";
+    freeShippingBar.className = "progress-bar-fill";
+  } else if (totalQuantity === 2) {
+    freeShippingStatus.innerHTML = `Adicione mais <strong>2 camisetas</strong> para ganhar <strong>FRETE GRÁTIS</strong>!`;
+    freeShippingBar.style.width = "50%";
+    freeShippingBar.className = "progress-bar-fill";
+  } else if (totalQuantity === 3) {
+    freeShippingStatus.innerHTML = `Adicione apenas <strong>1 camiseta</strong> para liberar <strong>FRETE GRÁTIS</strong>!`;
+    freeShippingBar.style.width = "75%";
+    freeShippingBar.className = "progress-bar-fill";
+  } else if (totalQuantity >= 4) {
+    freeShippingStatus.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" class="free-shipping-icon" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> <strong>FRETE GRÁTIS LIBERADO!</strong>`;
+    freeShippingBar.style.width = "100%";
+    freeShippingBar.className = "progress-bar-fill green";
+  }
+}
+
+function initCartEvents() {
+  const cartTrigger = document.getElementById("cartTrigger");
+  const cartClose = document.getElementById("cartClose");
+  const cartOverlay = document.getElementById("cartOverlay");
+  const cartDrawer = document.getElementById("cartDrawer");
+  const checkoutBtn = document.getElementById("checkoutBtn");
+
+  window.openCart = () => {
+    cartOverlay.classList.add("open");
+    cartDrawer.classList.add("open");
+  };
+  window.closeCart = () => {
+    cartOverlay.classList.remove("open");
+    cartDrawer.classList.remove("open");
+  };
+
+  cartTrigger.addEventListener("click", window.openCart);
+  cartClose.addEventListener("click", window.closeCart);
+  cartOverlay.addEventListener("click", window.closeCart);
+
+  // REDIRECIONAMENTO DE CHECKOUT REAL E SEGURO DO SHOPIFY
+  checkoutBtn.addEventListener("click", () => {
+    const checkoutUrl = localStorage.getItem('shopify_cart_checkout_url');
+    if (checkoutUrl) {
+      showLoadingToast("Redirecionando para o checkout seguro...");
+      window.location.href = checkoutUrl;
+    } else {
+      showErrorToast("Nenhum link de checkout gerado. Adicione itens.");
+    }
+  });
+}
+
+// ==========================================================================
+// F. DETALHES DO PRODUTO EM POPUP PREMIUM (DADOS REAIS DO SHOPIFY)
+// ==========================================================================
+window.openProductPage = function(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product) return;
+
+  currentProductPageSize = product.variants[0]?.size || "M";
+  
+  const overlay = document.getElementById("productPageOverlay");
+  if (!overlay) return;
+
+  const thumbsHTML = product.images.map((img, index) => `
+    <div class="product-gallery-thumb ${index === 0 ? 'active' : ''}" onclick="window.changeProductImage(this, '${img}')">
+      <img src="${img}" alt="${product.name} Miniatura ${index + 1}">
+    </div>
+  `).join('');
+
+  const bulletsHTML = product.images.map((_, index) => `
+    <span class="gallery-bullet ${index === 0 ? 'active' : ''}"></span>
+  `).join('');
+
+  const slidesHTML = product.images.map((img, index) => `
+    <div class="mobile-gallery-slide">
+      <img src="${img}" alt="${product.name} ${index + 1}" loading="${index === 0 ? 'eager' : 'lazy'}">
+    </div>
+  `).join('');
+
+  // Gerar botões de tamanhos reais do produto no Shopify
+  const sizesHTML = product.variants.map((v, index) => {
+    const isOutOfStock = !v.available;
+    return `
+      <button class="size-rounded-btn ${index === 0 ? 'active' : ''} ${isOutOfStock ? 'disabled' : ''}" 
+              ${isOutOfStock ? 'disabled' : ''}
+              onclick="window.selectProductPageSize(this, '${v.size}')">
+        ${v.size}
+      </button>
+    `;
+  }).join('');
+
+  const firstAvailableVariant = product.variants.find(v => v.available) || product.variants[0];
+  const oldPriceHTML = firstAvailableVariant?.compareAtPrice 
+    ? `R$ ${firstAvailableVariant.compareAtPrice.toFixed(2).replace('.', ',')}` 
+    : `R$ ${(product.price * 1.35).toFixed(2).replace('.', ',')}`;
+
+  overlay.innerHTML = `
+    <div class="product-page-container">
+      <button class="product-page-close-btn" onclick="window.closeProductPage()" title="Voltar ao catálogo">✕ RETORNAR AO DROP</button>
+      
+      <div class="product-page-layout">
+        <div class="product-page-gallery-side">
+          <div class="product-gallery-thumbnails-wrapper desktop-only">
+            <div class="product-gallery-thumbnails">
+              ${thumbsHTML}
+            </div>
+          </div>
+          <div class="product-main-image-wrapper desktop-only" id="productMainImageContainer">
+            <img src="${product.images[0] || 'assets/placeholder.png'}" alt="${product.name}" id="productMainImage" class="zoom-image">
+            <span class="product-gallery-indicator">Costas (Main Print)</span>
+          </div>
+
+          <div class="mobile-gallery-track" id="mobileGalleryTrack" onscroll="window.updateGalleryBullets(this)">
+            ${slidesHTML}
+          </div>
+          <div class="mobile-gallery-bullets" id="mobileGalleryBullets">
+            ${bulletsHTML}
+          </div>
+        </div>
+        
+        <div class="product-page-details-side" id="productDetailsSide">
+          <span class="product-page-subtitle">// COLLECTION LOTE 01</span>
+          <h2 class="product-page-title">${product.name}</h2>
+          <span class="product-page-color">${product.badge || 'Streetwear Premium'}</span>
+          
+          <div class="product-page-review-row">
+            <span class="review-stars-small">★★★★★</span>
+            <span class="review-count">(49 avaliações confirmadas)</span>
+          </div>
+          
+          <div class="product-page-pricing">
+            <span class="product-page-old-price">${oldPriceHTML}</span>
+            <span class="product-page-price">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
+          </div>
+          <div class="product-page-installments">ou 6x de R$ ${(product.price / 6).toFixed(2).replace('.', ',')} sem juros no cartão</div>
+          
+          <div class="product-page-sizes-wrapper">
+            <div class="size-header-row">
+              <span class="size-title-label">TAMANHO:</span>
+              <span class="size-current-active" id="activeSizeDisplay">${currentProductPageSize} ${currentProductPageSize === 'M' ? '(RECOMENDADO)' : ''}</span>
+            </div>
+            <div class="product-page-sizes">
+              ${sizesHTML}
+            </div>
+            <button class="size-guide-trigger-btn" onclick="window.openSizeGuide(); event.stopPropagation();">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" class="btn-ruler-icon" style="display:inline-block; vertical-align:middle; margin-right:6px; margin-top:-2px;">
+                <path d="M21.3 8.7L8.7 21.3c-1 1-2.5 1-3.5 0l-2.5-2.5c-1-1-1-2.5 0-3.5L15.3 2.7c1-1 2.5-1 3.5 0l2.5 2.5c1 1 1 2.5 0 3.5z"/>
+                <line x1="6.5" y1="12.5" x2="8.5" y2="14.5"/>
+                <line x1="9.5" y1="9.5" x2="11.5" y2="11.5"/>
+                <line x1="12.5" y1="6.5" x2="14.5" y2="8.5"/>
+                <line x1="15.5" y1="3.5" x2="17.5" y2="5.5"/>
+              </svg>TABELA DE MEDIDAS (SIZE GUIDE)</button>
+          </div>
+          
+          <button class="btn-add-to-cart desktop-only" ${!product.available ? 'disabled' : ''} onclick="window.addProductPageToCart('${product.id}')">
+            ${product.available ? 'ADICIONAR AO DROP ➔' : 'ESGOTADO'}
+          </button>
+          
+          <div class="product-page-benefits">
+            <div class="benefit-item-small">
+              <span class="benefit-icon-small">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 5v4h3v11h12V9h3V5l-3-3z"/>
+                  <path d="M10 2a2 2 0 0 0 4 0"/>
+                </svg>
+              </span>
+              <span class="benefit-text-small">Algodão Heavyweight (220g/m²)</span>
+            </div>
+            <div class="benefit-item-small">
+              <span class="benefit-icon-small">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="6" cy="6" r="3"/>
+                  <circle cx="6" cy="18" r="3"/>
+                  <line x1="9.8" y1="8.2" x2="20" y2="17"/>
+                  <line x1="9.8" y1="15.8" x2="20" y2="7"/>
+                </svg>
+              </span>
+              <span class="benefit-text-small">Modelagem Oversized Autêntica</span>
+            </div>
+            <div class="benefit-item-small">
+              <span class="benefit-icon-small">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.35857 19.5 5 21 6.5 21C8 21 9 20 10.5 20C11 20 11.5 22 12 22Z"/>
+                  <circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/>
+                  <circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/>
+                  <circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/>
+                </svg>
+              </span>
+              <span class="benefit-text-small">Estampa Maciça de Alta Costura</span>
+            </div>
+          </div>
+          
+          <div class="product-page-accordions">
+            <div class="product-accordion-item">
+              <button class="product-accordion-header" onclick="window.toggleProductAccordion(this)">
+                <span>CONCEITO & MODELO</span>
+                <span class="accordion-icon">+</span>
+              </button>
+              <div class="product-accordion-content">
+                <p>${product.description}</p>
+              </div>
+            </div>
+            <div class="product-accordion-item">
+              <button class="product-accordion-header" onclick="window.toggleProductAccordion(this)">
+                <span>ESPECIFICAÇÕES TÉCNICAS</span>
+                <span class="accordion-icon">+</span>
+              </button>
+              <div class="product-accordion-content">
+                <div style="white-space: pre-line;">${product.details}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mobile-sticky-spacer"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-sticky-cta mobile-only" id="mobileStickyCta">
+      <div class="mobile-sticky-size-indicator">
+        <span>TAMANHO: </span><span id="mobileStickySize">${currentProductPageSize}</span>
+      </div>
+      <button class="mobile-sticky-btn" ${!product.available ? 'disabled' : ''} onclick="window.addProductPageToCart('${product.id}')">
+        ${product.available ? `ADICIONAR AO DROP <span class="sticky-price">R$ ${product.price.toFixed(2).replace('.', ',')}</span>` : 'ESGOTADO'}
+      </button>
+    </div>
+  `;
+
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
+  window.setupImageZoom();
+};
+
+window.closeProductPage = function() {
+  const overlay = document.getElementById("productPageOverlay");
+  if (!overlay) return;
+  overlay.classList.remove("open");
+  document.body.style.overflow = "";
+};
+
+window.changeProductImage = function(thumbElement, imageUrl) {
+  const mainImage = document.getElementById("productMainImage");
+  if (mainImage) mainImage.src = imageUrl;
+
+  const indicator = document.querySelector(".product-gallery-indicator");
+  if (indicator) {
+    indicator.textContent = imageUrl.includes("back") ? "Costas (Main Print)" : "Detalhe da Peça";
+  }
+
+  const allThumbs = document.querySelectorAll(".product-gallery-thumb");
+  allThumbs.forEach(t => t.classList.remove("active"));
+  thumbElement.classList.add("active");
+};
+
+window.selectProductPageSize = function(buttonElement, size) {
+  currentProductPageSize = size;
+  
+  const allButtons = document.querySelectorAll(".size-rounded-btn");
+  allButtons.forEach(btn => btn.classList.remove("active"));
+  buttonElement.classList.add("active");
+
+  const display = document.getElementById("activeSizeDisplay");
+  if (display) {
+    display.textContent = `${size} ${size === 'M' ? '(RECOMENDADO)' : ''}`;
+  }
+
+  const mobileStickySize = document.getElementById("mobileStickySize");
+  if (mobileStickySize) mobileStickySize.textContent = size;
+};
+
+window.updateGalleryBullets = function(trackEl) {
+  const slideWidth = trackEl.offsetWidth;
+  const currentIndex = Math.round(trackEl.scrollLeft / slideWidth);
+  const bullets = document.querySelectorAll(".gallery-bullet");
+  bullets.forEach((b, i) => b.classList.toggle("active", i === currentIndex));
+};
+
+window.toggleProductAccordion = function(headerElement) {
+  const parent = headerElement.parentElement;
+  const content = parent.querySelector(".product-accordion-content");
+  const isExpanded = headerElement.classList.contains("active");
+
+  const allItems = document.querySelectorAll(".product-accordion-item");
+  allItems.forEach(item => {
+    item.querySelector(".product-accordion-header").classList.remove("active");
+    item.querySelector(".accordion-icon").textContent = "+";
+    item.querySelector(".product-accordion-content").style.maxHeight = null;
+  });
+
+  if (!isExpanded) {
+    headerElement.classList.add("active");
+    headerElement.querySelector(".accordion-icon").textContent = "−";
+    content.style.maxHeight = content.scrollHeight + "px";
+  }
+};
+
+window.setupImageZoom = function() {
+  const container = document.getElementById("productMainImageContainer");
+  const img = document.getElementById("productMainImage");
+  if (!container || !img) return;
+
+  container.addEventListener("mousemove", (e) => {
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const xPercent = (x / rect.width) * 100;
+    const yPercent = (y / rect.height) * 100;
+
+    img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+    img.style.transform = "scale(1.7)";
+  });
+
+  container.addEventListener("mouseleave", () => {
+    img.style.transform = "scale(1)";
+    img.style.transformOrigin = "center center";
+  });
+};
+
+window.addProductPageToCart = async function(productId) {
+  await window.addProductToCart(productId, currentProductPageSize);
+  window.closeProductPage();
+};
+
+// ==========================================================================
+// G. OUTROS COMPONENTES DA INTERFACE (LIFESTYLE, MENU, FAQ, COUNTDOWN)
+// ==========================================================================
+function initCountdown() {
+  const timerEl = document.getElementById("countdownTimer");
+  if (!timerEl) return;
+
+  let timeRemaining = sessionStorage.getItem("void_countdown");
+  if (!timeRemaining) {
+    timeRemaining = 2 * 60 * 60 + 45 * 60 + 12;
+  } else {
+    timeRemaining = parseInt(timeRemaining, 10);
+  }
+
+  const updateTimer = () => {
+    if (timeRemaining <= 0) timeRemaining = 3 * 60 * 60;
+    timeRemaining--;
+    sessionStorage.setItem("void_countdown", timeRemaining);
+
+    const hrs = Math.floor(timeRemaining / 3600);
+    const mins = Math.floor((timeRemaining % 3600) / 60);
+    const secs = timeRemaining % 60;
+
+    timerEl.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+}
+
+function initFaqAccordion() {
+  const faqTriggers = document.querySelectorAll(".faq-trigger");
+  faqTriggers.forEach(trigger => {
+    trigger.addEventListener("click", () => {
+      const parent = trigger.parentElement;
+      const answer = parent.querySelector(".faq-answer");
+      const isExpanded = trigger.getAttribute("aria-expanded") === "true";
+
+      document.querySelectorAll(".faq-item").forEach(item => {
+        item.classList.remove("active");
+        item.querySelector(".faq-trigger").setAttribute("aria-expanded", "false");
+        item.querySelector(".faq-answer").style.maxHeight = null;
+      });
+
+      if (!isExpanded) {
+        parent.classList.add("active");
+        trigger.setAttribute("aria-expanded", "true");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+      }
+    });
+  });
+}
+
+function initCarousel() {
+  const track = document.getElementById("carouselTrack");
+  const prevBtn = document.getElementById("carouselPrevBtn");
+  const nextBtn = document.getElementById("carouselNextBtn");
+  const dotsContainer = document.getElementById("carouselDots");
+  
+  if (!track || !prevBtn || !nextBtn || !dotsContainer) return;
+
+  const slides = Array.from(track.children);
+  let currentIndex = 0;
+
+  dotsContainer.innerHTML = slides.map((_, idx) => `<div class="carousel-dot ${idx === 0 ? 'active' : ''}" onclick="goToSlide(${idx})"></div>`).join('');
+  const dots = Array.from(dotsContainer.children);
+
+  const updateCarousel = (index) => {
+    track.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach((dot, idx) => dot.classList.toggle("active", idx === index));
+    currentIndex = index;
+  };
+
+  window.goToSlide = function(index) {
+    updateCarousel(index);
+  };
+
+  prevBtn.addEventListener("click", () => {
+    let nextIdx = currentIndex - 1;
+    if (nextIdx < 0) nextIdx = slides.length - 1;
+    updateCarousel(nextIdx);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    let nextIdx = currentIndex + 1;
+    if (nextIdx >= slides.length) nextIdx = 0;
+    updateCarousel(nextIdx);
+  });
+
+  setInterval(() => {
+    let nextIdx = currentIndex + 1;
+    if (nextIdx >= slides.length) nextIdx = 0;
+    updateCarousel(nextIdx);
+  }, 6000);
+}
+
 function initMobileMenu() {
   const toggle = document.getElementById("menuToggle");
   const overlay = document.getElementById("mobileMenuOverlay");
@@ -195,758 +1201,282 @@ function initMobileMenu() {
 
   toggle.addEventListener("click", window.toggleMobileMenu);
   if (closeBtn) closeBtn.addEventListener("click", window.closeMobileMenu);
-
-  // Fechar ao clicar fora dos links
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) window.closeMobileMenu();
   });
 }
 
 // ==========================================================================
-// C. RENDERIZAR O CATÁLOGO DINÂMICO DE PRODUTOS (SHOPIFY STYLE)
+// H. NOTIFICAÇÕES (TOASTS) DE FEEDBACK DA API
 // ==========================================================================
-function renderCatalog() {
-  const catalogContainer = document.getElementById("productsCatalog");
-  if (!catalogContainer) return;
-
-  catalogContainer.innerHTML = PRODUCTS.map(p => {
-    const backImage = p.images[0];
-    const frontImage = p.images[1];
-    return `
-      <div class="product-card" id="product-${p.id}" onclick="openProductPage('${p.id}')">
-        ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
-        <div class="product-card-thumb" title="Ver detalhes de ${p.name}">
-          <img src="${frontImage}" alt="${p.name} Frente" class="front-img" id="thumb-front-${p.id}">
-          <img src="${backImage}" alt="${p.name} Costas" class="back-img" id="thumb-back-${p.id}" style="opacity: 0;">
-        </div>
-        <div class="product-card-details">
-          <h3 class="product-card-title">${p.name}</h3>
-          <div class="product-card-pricing">
-            <span class="product-old-price">R$ ${p.oldPrice.toFixed(2).replace('.', ',')}</span>
-            <span class="product-price">R$ ${p.price.toFixed(2).replace('.', ',')}</span>
-          </div>
-          <div class="product-installments">6x de R$ ${(p.price / 6).toFixed(2).replace('.', ',')} s/juros</div>
-          <button class="product-card-btn" onclick="addProductToCart('${p.id}'); event.stopPropagation();">+ ADD</button>
-        </div>
-      </div>
-    `;
-  }).join('');
+function showLoadingToast(msg) {
+  let toast = document.getElementById('shopify-feedback-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'shopify-feedback-toast';
+    toast.style = "position: fixed; bottom: 20px; right: 20px; background: #fff; color: #000; padding: 14px 28px; border: 1px solid #e5e5e5; z-index: 10000; font-family: 'Unbounded', monospace; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 10px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: all 0.3s ease;";
+    document.body.appendChild(toast);
+  }
+  toast.style.borderColor = "#e5e5e5";
+  toast.style.background = "#fff";
+  toast.style.color = "#000";
+  toast.innerHTML = `<span class="spinner-spin" style="display:inline-block; width:12px; height:12px; border: 2px solid #000; border-top-color: transparent; border-radius:50%;"></span> ${msg}`;
+  toast.style.display = 'flex';
 }
 
-window.selectSize = function(productId, size) {
-  selectedSizes[productId] = size;
-  const sizesContainer = document.getElementById(`sizes-${productId}`);
-  if (sizesContainer) {
-    const buttons = sizesContainer.querySelectorAll(".size-btn");
-    buttons.forEach(btn => {
-      btn.classList.toggle("active", btn.textContent === size);
-    });
+function hideLoadingToast() {
+  const toast = document.getElementById('shopify-feedback-toast');
+  if (toast) toast.style.display = 'none';
+}
+
+function showErrorToast(msg) {
+  let toast = document.getElementById('shopify-feedback-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'shopify-feedback-toast';
+    toast.style = "position: fixed; bottom: 20px; right: 20px; background: #fff5f5; color: #c00; padding: 14px 28px; border: 1px solid #ffcccc; z-index: 10000; font-family: 'Unbounded', monospace; font-size: 11px; font-weight: 800; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);";
+    document.body.appendChild(toast);
   }
-};
+  toast.style.borderColor = "#ffcccc";
+  toast.style.background = "#fff5f5";
+  toast.style.color = "#c00";
+  toast.innerHTML = `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:6px; margin-top:-2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>${msg}`;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 4000);
+}
 
-window.toggleFlip = function(productId) {
-  const frontImg = document.getElementById(`thumb-front-${productId}`);
-  const backImg = document.getElementById(`thumb-back-${productId}`);
-  if (!frontImg || !backImg) return;
-
-  const isBackVisible = backImg.style.opacity === "1";
-  if (isBackVisible) {
-    backImg.style.opacity = "0";
-    frontImg.style.opacity = "1";
-  } else {
-    backImg.style.opacity = "1";
-    frontImg.style.opacity = "0";
+function renderErrorCatalog(errorMsg) {
+  const catalog = document.getElementById("productsCatalog");
+  if (catalog) {
+    catalog.innerHTML = `
+      <div style="grid-column: 1/-1; background: #fff5f5; border: 1px dashed #ffcccc; padding: 25px; text-align: center; color: #c00; font-family: 'Unbounded', monospace; font-size: 12px; border-radius: 4px;">
+        <strong>Erro ao carregar catálogo:</strong> ${errorMsg}<br>
+        <span style="color: #666; font-size:11px;">Por favor, verifique suas chaves no .env e o status do seu Storefront.</span>
+      </div>
+    `;
   }
-};
+}
 
-window.addProductToCart = function(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
-
-  const size = selectedSizes[productId] || "M";
-  const existingItem = shoppingCart.find(item => item.product.id === productId && item.size === size);
-
-  if (existingItem) {
-    existingItem.quantity += 1;
-  } else {
-    shoppingCart.push({
-      product: product,
-      size: size,
-      quantity: 1
-    });
+function renderConfigWarning() {
+  const catalog = document.getElementById('productsCatalog');
+  if (catalog) {
+    catalog.style.display = 'block';
+    catalog.innerHTML = `
+      <div style="grid-column: 1 / -1; background: #fff5f5; border: 1px dashed #ffcccc; padding: 30px; text-align: center; color: #c00; font-family: 'Unbounded', monospace; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <h3 style="margin-top:0; color: #c00;">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:8px; margin-top:-2px;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>CONEXÃO SHOPIFY INDISPONÍVEL
+        </h3>
+        <p style="color: #444;">As variáveis de ambiente do Shopify Storefront API não foram encontradas localmente.</p>
+        <p style="font-size: 13px; color: #666; margin: 15px 0 5px 0;">Crie um arquivo <strong>.env</strong> na pasta do projeto e configure suas chaves:</p>
+        <pre style="background: #fafafa; padding: 15px; text-align: left; display: inline-block; border-radius: 4px; border: 1px solid #e5e5e5; color: #000; font-size:12px; margin: 10px 0; font-family: monospace; width: 100%; max-width: 500px; box-sizing: border-box;">
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=sua-loja.myshopify.com
+NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=seu_access_token_aqui</pre>
+        <p style="font-size: 13px; color: #666; margin-top: 10px;">Após salvar o arquivo .env, reinicie o servidor do site para carregar as alterações.</p>
+      </div>
+    `;
   }
-
-  updateCartUI();
-  window.openCart();
-};
-
-window.changeQuantity = function(productId, size, change) {
-  const item = shoppingCart.find(item => item.product.id === productId && item.size === size);
-  if (!item) return;
-
-  item.quantity += change;
-  if (item.quantity <= 0) {
-    shoppingCart = shoppingCart.filter(item => !(item.product.id === productId && item.size === size));
-  }
-  updateCartUI();
-};
-
-window.removeItem = function(productId, size) {
-  shoppingCart = shoppingCart.filter(item => !(item.product.id === productId && item.size === size));
-  updateCartUI();
-};
+}
 
 // ==========================================================================
-// D. EVENTOS DO CARRINHO DE COMPRAS E MODAL DE SUCESSO
+// I. INTERAÇÕES DE ALTA COSTURA E RECURSOS PREMIUM (LIGHT BRUTALISTA)
 // ==========================================================================
-function initCartEvents() {
-  const cartTrigger = document.getElementById("cartTrigger");
-  const cartClose = document.getElementById("cartClose");
-  const cartOverlay = document.getElementById("cartOverlay");
-  const cartDrawer = document.getElementById("cartDrawer");
-  const checkoutBtn = document.getElementById("checkoutBtn");
-  const checkoutModalOverlay = document.getElementById("checkoutModalOverlay");
-  const modalCloseBtn = document.getElementById("modalCloseBtn");
 
-  window.openCart = () => {
-    cartOverlay.classList.add("open");
-    cartDrawer.classList.add("open");
+function initHeaderScroll() {
+  const header = document.getElementById("mainHeader");
+  if (!header) return;
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 50) {
+      header.classList.add("is-scrolled");
+    } else {
+      header.classList.remove("is-scrolled");
+    }
+  });
+}
+
+
+
+function initSizeGuideEvents() {
+  window.openSizeGuide = () => {
+    const sizeGuide = document.getElementById("sizeGuideOverlay");
+    if (sizeGuide) {
+      sizeGuide.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    }
   };
-  window.closeCart = () => {
-    cartOverlay.classList.remove("open");
-    cartDrawer.classList.remove("open");
+
+  window.closeSizeGuide = () => {
+    const sizeGuide = document.getElementById("sizeGuideOverlay");
+    if (sizeGuide) {
+      sizeGuide.style.display = "none";
+      const pdpOverlay = document.getElementById("productPageOverlay");
+      if (!pdpOverlay || !pdpOverlay.classList.contains("open")) {
+        document.body.style.overflow = "";
+      }
+    }
   };
 
-  cartTrigger.addEventListener("click", window.openCart);
-  cartClose.addEventListener("click", window.closeCart);
-  cartOverlay.addEventListener("click", window.closeCart);
+  const sizeGuideOverlay = document.getElementById("sizeGuideOverlay");
+  if (sizeGuideOverlay) {
+    sizeGuideOverlay.addEventListener("click", (e) => {
+      if (e.target === sizeGuideOverlay) window.closeSizeGuide();
+    });
+  }
+}
 
-  checkoutBtn.addEventListener("click", () => {
-    window.closeCart();
+function initDiscountSimulator() {
+  const buttons = document.querySelectorAll(".simulator-opt-btn");
+  const simUnitPrice = document.getElementById("simUnitPrice");
+  const simSavings = document.getElementById("simSavings");
+  const simShipping = document.getElementById("simShipping");
+  const simTotal = document.getElementById("simTotal");
+  const simBtnQty = document.getElementById("simBtnQty");
+  const simAddBtn = document.getElementById("simAddBtn");
 
-    const modalOrderId = document.getElementById("modalOrderId");
-    if (modalOrderId) {
-      modalOrderId.textContent = `#VOID-${Math.floor(Math.random() * 9000) + 1000}-2026`;
+  if (!buttons.length || !simUnitPrice) return;
+
+  let currentSimQty = 1;
+
+  const updateSimulation = (qty) => {
+    currentSimQty = qty;
+
+    let unitPrice = 109.90;
+    let totalSavings = 0.00;
+    let shipping = 19.90;
+
+    if (qty === 2) {
+      unitPrice = 99.90;
+      totalSavings = 20.00;
+    } else if (qty === 3) {
+      unitPrice = 89.90;
+      totalSavings = 60.00;
+    } else if (qty >= 4) {
+      unitPrice = 89.90;
+      totalSavings = qty * 20.00;
+      shipping = 0.00;
     }
 
-    checkoutModalOverlay.classList.add("open");
+    const rawTotal = (unitPrice * qty) + shipping;
 
-    // Resetar Carrinho
-    shoppingCart = [];
-    updateCartUI();
-  });
+    simUnitPrice.textContent = `R$ ${unitPrice.toFixed(2).replace('.', ',')}`;
+    simSavings.textContent = `R$ ${totalSavings.toFixed(2).replace('.', ',')}`;
+    simShipping.textContent = shipping === 0 ? 'GRÁTIS' : `R$ ${shipping.toFixed(2).replace('.', ',')}`;
+    simTotal.textContent = `R$ ${rawTotal.toFixed(2).replace('.', ',')}`;
+    
+    simBtnQty.textContent = qty === 4 ? "4 CAMISETAS" : `${qty} ${qty === 1 ? 'CAMISETA' : 'CAMISETAS'}`;
+  };
 
-  modalCloseBtn.addEventListener("click", () => {
-    checkoutModalOverlay.classList.remove("open");
-  });
-}
-
-// ==========================================================================
-// E. ATUALIZAR INTERFACE DO CARRINHO COM CÁLCULO DE DESCONTOS PROGRESSIVOS
-// ==========================================================================
-function updateCartUI() {
-  const cartBadge = document.getElementById("cartBadge");
-  const cartEmptyState = document.getElementById("cartEmptyState");
-  const cartFilledState = document.getElementById("cartFilledState");
-  const cartItemsContainer = document.getElementById("cartItemsContainer");
-  const freeShippingStatus = document.getElementById("freeShippingStatus");
-  const freeShippingBar = document.getElementById("freeShippingBar");
-
-  if (!cartBadge) return;
-
-  const totalQuantity = shoppingCart.reduce((sum, item) => sum + item.quantity, 0);
-
-  if (totalQuantity === 0) {
-    cartBadge.textContent = "0";
-    cartEmptyState.style.display = "block";
-    cartFilledState.style.display = "none";
-    return;
-  }
-
-  // Preencher Badge
-  cartBadge.textContent = totalQuantity;
-  cartEmptyState.style.display = "none";
-  cartFilledState.style.display = "flex";
-
-  // Preencher itens no Carrinho
-  cartItemsContainer.innerHTML = shoppingCart.map(item => `
-    <div class="cart-item-card">
-      <div class="cart-item-thumb">
-        <img src="${item.product.images[1]}" alt="${item.product.name}">
-      </div>
-      <div class="cart-item-details">
-        <span class="cart-item-title">${item.product.name}</span>
-        <span class="cart-item-desc">Modelo: ${item.product.colorText} / Tam: ${item.size}</span>
-        <div class="cart-item-qty-selector">
-          <button class="qty-adjust-btn" onclick="changeQuantity('${item.product.id}', '${item.size}', -1)">-</button>
-          <span class="qty-number">${item.quantity}</span>
-          <button class="qty-adjust-btn" onclick="changeQuantity('${item.product.id}', '${item.size}', 1)">+</button>
-        </div>
-      </div>
-      <div class="cart-item-price-box">
-        <span class="cart-item-price">R$ ${(109.90 * item.quantity).toFixed(2).replace('.', ',')}</span>
-        <button class="cart-item-remove-btn" onclick="removeItem('${item.product.id}', '${item.size}')" title="Excluir item">✕</button>
-      </div>
-    </div>
-  `).join('');
-
-  // 1 camiseta -> R$109,90
-  // 2 camisetas -> R$199,90 (total)
-  // 3+ camisetas -> R$269,90 (primeiras 3) + R$89,96 por camiseta adicional (baseada no valor R$269,90 / 3)
-  let subtotal = 0;
-  if (totalQuantity === 1) {
-    subtotal = 109.90;
-  } else if (totalQuantity === 2) {
-    subtotal = 199.90;
-  } else if (totalQuantity >= 3) {
-    subtotal = 269.90 + (totalQuantity - 3) * 89.96;
-  }
-
-  const originalPrice = totalQuantity * 109.90;
-  const discount = originalPrice - subtotal;
-
-  // Frete
-  const shippingFree = totalQuantity >= 3;
-  const shippingCost = shippingFree ? 0 : 19.90;
-  const finalTotal = subtotal + shippingCost;
-
-  // Renderizar Valores do Resumo
-  let summaryHTML = `
-    <div class="summary-row">
-      <span>Subtotal (Itens):</span>
-      <span>R$ ${originalPrice.toFixed(2).replace('.', ',')}</span>
-    </div>
-  `;
-
-  if (discount > 0.01) {
-    summaryHTML += `
-      <div class="summary-row" style="color: var(--color-neon-green); font-weight: 600;">
-        <span>Desconto Pack Automático:</span>
-        <span>- R$ ${discount.toFixed(2).replace('.', ',')}</span>
-      </div>
-    `;
-  }
-
-  summaryHTML += `
-    <div class="summary-row">
-      <span>Frete:</span>
-      <span>${shippingFree ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2).replace('.', ',')}`}</span>
-    </div>
-    <div class="summary-row total">
-      <span>Total:</span>
-      <span>R$ ${finalTotal.toFixed(2).replace('.', ',')}</span>
-    </div>
-  `;
-
-  document.querySelector(".cart-summary").innerHTML = summaryHTML;
-
-  // Controle de Progresso do Frete Grátis & Incentive
-  if (totalQuantity === 1) {
-    freeShippingStatus.innerHTML = `Adicione mais <strong>1 camiseta</strong> para desconto automático!`;
-    freeShippingBar.style.width = "33%";
-    freeShippingBar.className = "progress-bar-fill";
-  } else if (totalQuantity === 2) {
-    freeShippingStatus.innerHTML = `Falta apenas <strong>1 camiseta</strong> para liberar <strong>FRETE GRÁTIS</strong> e desconto máximo!`;
-    freeShippingBar.style.width = "66%";
-    freeShippingBar.className = "progress-bar-fill";
-  } else if (totalQuantity >= 3) {
-    freeShippingStatus.innerHTML = `🔥 <strong>FRETE GRÁTIS & DESCONTO MÁXIMO LIBERADOS!</strong>`;
-    freeShippingBar.style.width = "100%";
-    freeShippingBar.className = "progress-bar-fill green";
-  }
-}
-
-
-// ==========================================================================
-// F. CAROUSEL DE LIFESTYLE (SLIDER COM SUPORTE E BULLETS)
-// ==========================================================================
-function initCarousel() {
-  const track = document.getElementById("carouselTrack");
-  const prevBtn = document.getElementById("carouselPrevBtn");
-  const nextBtn = document.getElementById("carouselNextBtn");
-  const dotsContainer = document.getElementById("carouselDots");
-  
-  if (!track || !prevBtn || !nextBtn || !dotsContainer) return;
-
-  const slides = Array.from(track.children);
-  let currentIndex = 0;
-
-  // Renderizar Dots
-  dotsContainer.innerHTML = slides.map((_, idx) => `<div class="carousel-dot ${idx === 0 ? 'active' : ''}" onclick="goToSlide(${idx})"></div>`).join('');
-  const dots = Array.from(dotsContainer.children);
-
-  const updateCarousel = (index) => {
-    track.style.transform = `translateX(-${index * 100}%)`;
-    dots.forEach((dot, idx) => {
-      dot.classList.toggle("active", idx === index);
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      
+      const qty = parseInt(btn.getAttribute("data-qty"), 10);
+      updateSimulation(qty);
     });
-    currentIndex = index;
-  };
-
-  window.goToSlide = function(index) {
-    updateCarousel(index);
-  };
-
-  prevBtn.addEventListener("click", () => {
-    let nextIdx = currentIndex - 1;
-    if (nextIdx < 0) nextIdx = slides.length - 1;
-    updateCarousel(nextIdx);
   });
 
-  nextBtn.addEventListener("click", () => {
-    let nextIdx = currentIndex + 1;
-    if (nextIdx >= slides.length) nextIdx = 0;
-    updateCarousel(nextIdx);
-  });
+  simAddBtn.addEventListener("click", async () => {
+    if (PRODUCTS.length === 0) {
+      showErrorToast("Nenhum produto disponível no catálogo para adicionar.");
+      return;
+    }
 
-  // Auto-play suave do slide
-  setInterval(() => {
-    let nextIdx = currentIndex + 1;
-    if (nextIdx >= slides.length) nextIdx = 0;
-    updateCarousel(nextIdx);
-  }, 6000);
+    const baseProduct = PRODUCTS[0];
+    if (!baseProduct) return;
+
+    showLoadingToast(`Adicionando combo de ${currentSimQty} camisetas...`);
+
+    try {
+      const variant = baseProduct.variants.find(v => v.size === 'M') || baseProduct.variants[0];
+      if (!variant) throw new Error("Variante não encontrada.");
+
+      const cartId = localStorage.getItem('shopify_cart_id');
+      if (!cartId) {
+        const data = await shopifyQuery(CART_CREATE_MUTATION, {
+          input: {
+            lines: [{ merchandiseId: variant.id, quantity: currentSimQty }]
+          }
+        });
+        if (data && data.cartCreate && data.cartCreate.cart) {
+          syncCartWithShopify(data.cartCreate.cart);
+        }
+      } else {
+        const data = await shopifyQuery(CART_LINES_ADD_MUTATION, {
+          cartId,
+          lines: [{ merchandiseId: variant.id, quantity: currentSimQty }]
+        });
+        if (data && data.cartLinesAdd && data.cartLinesAdd.cart) {
+          syncCartWithShopify(data.cartLinesAdd.cart);
+        }
+      }
+      
+      hideLoadingToast();
+      window.openCart();
+    } catch (err) {
+      console.error("Erro ao adicionar combo simulado:", err);
+      showErrorToast("Erro ao adicionar combo: " + err.message);
+    }
+  });
 }
 
 // ==========================================================================
-// G. FAQ ACCORDION INTERATIVO
+// SCROLL REVEALS AND LOW-INTENSITY PARALLAX
 // ==========================================================================
-function initFaqAccordion() {
-  const faqTriggers = document.querySelectorAll(".faq-trigger");
+function initScrollRevealAndParallax() {
+  // Intersection Observer for scroll reveal animations
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px -10% -10% 0px',
+    threshold: 0.05
+  };
 
-  faqTriggers.forEach(trigger => {
-    trigger.addEventListener("click", () => {
-      const parent = trigger.parentElement;
-      const answer = parent.querySelector(".faq-answer");
-      const isExpanded = trigger.getAttribute("aria-expanded") === "true";
-
-      // Fechar todos
-      document.querySelectorAll(".faq-item").forEach(item => {
-        item.classList.remove("active");
-        item.querySelector(".faq-trigger").setAttribute("aria-expanded", "false");
-        item.querySelector(".faq-answer").style.maxHeight = null;
-      });
-
-      // Expandir o atual se não estivesse expandido
-      if (!isExpanded) {
-        parent.classList.add("active");
-        trigger.setAttribute("aria-expanded", "true");
-        // Ajuste dinâmico de altura para transição nativa de CSS
-        answer.style.maxHeight = answer.scrollHeight + "px";
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        revealObserver.unobserve(entry.target);
       }
     });
+  }, observerOptions);
+
+  // Auto-observe headers and reveal elements
+  const elementsToReveal = document.querySelectorAll(
+    '.section-title, .section-subtitle, .flagship-title, .flagship-quote, .reveal-text'
+  );
+  elementsToReveal.forEach(el => {
+    el.classList.add('reveal-text');
+    revealObserver.observe(el);
   });
-}
 
-// ==========================================================================
-// H. NOTIFICAÇÕES FLUTUANTES (FOMO E PROVA SOCIAL)
-// ==========================================================================
-function initToastsSystem() {
-  const toastContainer = document.getElementById("toastContainer");
-  if (!toastContainer) return;
+  // Low-intensity Scroll Parallax on Hero and Flagship
+  const heroImage = document.getElementById("heroBgImage");
+  const flagshipImage = document.querySelector(".flagship-main-image-wrapper img");
 
-  const names = ["Lucas", "Felipe", "Sofia", "Arthur", "Beatriz", "Gabriel", "Julia", "Enzo", "Guilherme", "Valentina", "Thiago", "Manuela"];
-  const cities = ["São Paulo, SP", "Rio de Janeiro, RJ", "Porto Alegre, RS", "Curitiba, PR", "Belo Horizonte, MG", "Salvador, BA", "Brasília, DF", "Fortaleza, CE"];
-  const comboTypes = ["Combo 3 Camisetas + Frete Grátis", "Combo 2 Camisetas (Pack)", "Combo 1 Camiseta (Básico)"];
-  
-  function triggerToast() {
-    const randomName = names[Math.floor(Math.random() * names.length)];
-    const randomCity = cities[Math.floor(Math.random() * cities.length)];
-    const randomCombo = comboTypes[Math.floor(Math.random() * comboTypes.length)];
-    const randomSec = Math.floor(Math.random() * 50) + 10;
+  window.addEventListener("scroll", () => {
+    const scrolled = window.pageYOffset;
 
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.innerHTML = `
-      <span class="toast-icon">⚡</span>
-      <div class="toast-content">
-        <span class="toast-message"><strong>${randomName}</strong> de ${randomCity} comprou o <strong>${randomCombo}</strong></span>
-        <span class="toast-time">há ${randomSec} segundos</span>
-      </div>
-    `;
-
-    toastContainer.appendChild(toast);
-
-    // Remover após 5 segundos
-    setTimeout(() => {
-      toast.style.animation = "toastIn 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) reverse forwards";
-      setTimeout(() => {
-        toast.remove();
-      }, 500);
-    }, 5000);
-  }
-
-  // Primeiro Toast após 8 segundos
-  setTimeout(triggerToast, 8000);
-
-  // Gatilhos subsequentes a cada 18 a 30 segundos aleatoriamente
-  const scheduleNextToast = () => {
-    const delay = Math.random() * 12000 + 18000;
-    setTimeout(() => {
-      triggerToast();
-      scheduleNextToast();
-    }, delay);
-  };
-  scheduleNextToast();
-}
-
-// ==========================================================================
-// I. SISTEMA DE COUNTDOWN E ESTOQUE CRÍTICO (SIMULADOS)
-// ==========================================================================
-function initCountdown() {
-  const timerEl = document.getElementById("countdownTimer");
-  if (!timerEl) return;
-
-  let timeRemaining = sessionStorage.getItem("void_countdown");
-  if (!timeRemaining) {
-    timeRemaining = 2 * 60 * 60 + 45 * 60 + 12; // 2h 45m 12s em segundos
-  } else {
-    timeRemaining = parseInt(timeRemaining, 10);
-  }
-
-  const updateTimer = () => {
-    if (timeRemaining <= 0) {
-      timeRemaining = 3 * 60 * 60; // Resetar para 3 horas
+    // Parallax on hero image (very subtle scale & shift)
+    if (heroImage) {
+      heroImage.style.transform = `scale(1.05) translate3d(0, ${scrolled * 0.08}px, 0)`;
     }
-    timeRemaining--;
-    sessionStorage.setItem("void_countdown", timeRemaining);
 
-    const hrs = Math.floor(timeRemaining / 3600);
-    const mins = Math.floor((timeRemaining % 3600) / 60);
-    const secs = timeRemaining % 60;
+    // Parallax on flagship image when visible in viewport
+    if (flagshipImage) {
+      const parentRect = flagshipImage.parentElement.getBoundingClientRect();
+      const parentTop = parentRect.top + scrolled;
+      const elementVisible = parentRect.bottom > 0 && parentRect.top < window.innerHeight;
 
-    timerEl.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  };
-
-  updateTimer();
-  setInterval(updateTimer, 1000);
-}
-
-function initStockUrgency() {
-  // Peça centralizada de urgência bypass
-}
-
-// ==========================================================================
-// J. SISTEMA DE PÁGINA DE PRODUTO DEDICADA PREMIUM (SHOPIFY LAYOUT STYLE)
-// ==========================================================================
-let currentProductPageSize = "M";
-
-window.openProductPage = function(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
-
-  currentProductPageSize = "M"; // Resetar tamanho ativo para M
-  
-  const overlay = document.getElementById("productPageOverlay");
-  if (!overlay) return;
-
-  // Renderizar a galeria de 5 imagens (modo desktop: thumbnails | modo mobile: swipe)
-  const thumbsHTML = product.images.map((img, index) => `
-    <div class="product-gallery-thumb ${index === 0 ? 'active' : ''}" onclick="window.changeProductImage(this, '${img}')">
-      <img src="${img}" alt="${product.name} Miniatura ${index + 1}">
-    </div>
-  `).join('');
-
-  // Bullets para galeria mobile swipeable
-  const bulletsHTML = product.images.map((_, index) => `
-    <span class="gallery-bullet ${index === 0 ? 'active' : ''}"></span>
-  `).join('');
-
-  // Slides para galeria mobile swipeable
-  const slidesHTML = product.images.map((img, index) => `
-    <div class="mobile-gallery-slide">
-      <img src="${img}" alt="${product.name} ${index + 1}" loading="${index === 0 ? 'eager' : 'lazy'}">
-    </div>
-  `).join('');
-
-  overlay.innerHTML = `
-    <div class="product-page-container">
-      <button class="product-page-close-btn" onclick="window.closeProductPage()" title="Voltar ao catálogo">✕ RETORNAR AO DROP</button>
-      
-      <div class="product-page-layout">
-        <!-- LADO ESQUERDO: Galeria Shopify-Style (Desktop) / Swipe (Mobile) -->
-        <div class="product-page-gallery-side">
-          <!-- Desktop: thumbnails + imagem principal -->
-          <div class="product-gallery-thumbnails-wrapper desktop-only">
-            <div class="product-gallery-thumbnails">
-              ${thumbsHTML}
-            </div>
-          </div>
-          <div class="product-main-image-wrapper desktop-only" id="productMainImageContainer">
-            <img src="${product.images[0]}" alt="${product.name} - Estampa Costas" id="productMainImage" class="zoom-image">
-            <span class="product-gallery-indicator">Costas (Main Print)</span>
-          </div>
-
-          <!-- Mobile: galeria swipeable com scroll-snap -->
-          <div class="mobile-gallery-track" id="mobileGalleryTrack" onscroll="window.updateGalleryBullets(this)">
-            ${slidesHTML}
-          </div>
-          <div class="mobile-gallery-bullets" id="mobileGalleryBullets">
-            ${bulletsHTML}
-          </div>
-        </div>
-        
-        <!-- LADO DIREITO: Detalhes e Conversão -->
-        <div class="product-page-details-side" id="productDetailsSide">
-          <span class="product-page-subtitle">// COLLECTION LOTE 01</span>
-          <h2 class="product-page-title">${product.name}</h2>
-          <span class="product-page-color">${product.colorText}</span>
-          
-          <div class="product-page-review-row">
-            <span class="review-stars-small">★★★★★</span>
-            <span class="review-count">(49 avaliações confirmadas)</span>
-          </div>
-          
-          <div class="product-page-pricing">
-            <span class="product-page-old-price">R$ ${product.oldPrice.toFixed(2).replace('.', ',')}</span>
-            <span class="product-page-price">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
-          </div>
-          <div class="product-page-installments">ou 6x de R$ ${(product.price / 6).toFixed(2).replace('.', ',')} sem juros no cartão</div>
-          
-          <!-- Seletor de Tamanhos Redondos -->
-          <div class="product-page-sizes-wrapper">
-            <div class="size-header-row">
-              <span class="size-title-label">TAMANHO:</span>
-              <span class="size-current-active" id="activeSizeDisplay">M (RECOMENDADO)</span>
-            </div>
-            <div class="product-page-sizes">
-              <button class="size-rounded-btn" onclick="window.selectProductPageSize(this, 'P')">P</button>
-              <button class="size-rounded-btn active" onclick="window.selectProductPageSize(this, 'M')">M</button>
-              <button class="size-rounded-btn" onclick="window.selectProductPageSize(this, 'G')">G</button>
-              <button class="size-rounded-btn" onclick="window.selectProductPageSize(this, 'GG')">GG</button>
-              <button class="size-rounded-btn" onclick="window.selectProductPageSize(this, 'XG')">XG</button>
-            </div>
-          </div>
-          
-          <!-- Botão ADD TO CART (Desktop inline) -->
-          <button class="btn-add-to-cart desktop-only" onclick="window.addProductPageToCart('${product.id}')">ADICIONAR AO DROP ➔</button>
-          
-          <!-- Benefícios Premium -->
-          <div class="product-page-benefits">
-            <div class="benefit-item-small">
-              <span class="benefit-icon-small">🛡️</span>
-              <span class="benefit-text-small">Algodão Heavyweight (220g/m²)</span>
-            </div>
-            <div class="benefit-item-small">
-              <span class="benefit-icon-small">✂️</span>
-              <span class="benefit-text-small">Modelagem Oversized Autêntica</span>
-            </div>
-            <div class="benefit-item-small">
-              <span class="benefit-icon-small">🎨</span>
-              <span class="benefit-text-small">Estampa Maciça de Alta Costura</span>
-            </div>
-            <div class="benefit-item-small">
-              <span class="benefit-icon-small">🧵</span>
-              <span class="benefit-text-small">Costura Reforçada de Ombros</span>
-            </div>
-            <div class="benefit-item-small">
-              <span class="benefit-icon-small">⚡</span>
-              <span class="benefit-text-small">Drop Limitado / Sem Restock</span>
-            </div>
-          </div>
-          
-          <!-- Acordeões Expansíveis -->
-          <div class="product-page-accordions">
-            <div class="product-accordion-item">
-              <button class="product-accordion-header" onclick="window.toggleProductAccordion(this)">
-                <span>CONCEITO & MODELO</span>
-                <span class="accordion-icon">+</span>
-              </button>
-              <div class="product-accordion-content">
-                <p>${product.description}</p>
-              </div>
-            </div>
-            <div class="product-accordion-item">
-              <button class="product-accordion-header" onclick="window.toggleProductAccordion(this)">
-                <span>ESPECIFICAÇÕES TÉCNICAS</span>
-                <span class="accordion-icon">+</span>
-              </button>
-              <div class="product-accordion-content">
-                <p style="white-space: pre-line;">${product.details}</p>
-              </div>
-            </div>
-            <div class="product-accordion-item">
-              <button class="product-accordion-header" onclick="window.toggleProductAccordion(this)">
-                <span>PRAZO DE ENVIO</span>
-                <span class="accordion-icon">+</span>
-              </button>
-              <div class="product-accordion-content">
-                <p>Nossos drops são limitados e exclusivos. As postagens e envios ocorrem em até 3 dias úteis após a compensação do pagamento. Código de rastreamento enviado automaticamente via e-mail.</p>
-              </div>
-            </div>
-            <div class="product-accordion-item">
-              <button class="product-accordion-header" onclick="window.toggleProductAccordion(this)">
-                <span>TABELA DE TAMANHOS (SIZE GUIDE)</span>
-                <span class="accordion-icon">+</span>
-              </button>
-              <div class="product-accordion-content">
-                <div class="size-guide-table-wrapper">
-                  <table class="size-guide-table">
-                    <thead><tr><th>Tamanho</th><th>Largura (cm)</th><th>Altura (cm)</th><th>Manga (cm)</th></tr></thead>
-                    <tbody>
-                      <tr><td>P</td><td>56</td><td>74</td><td>23</td></tr>
-                      <tr><td>M</td><td>59</td><td>76</td><td>24</td></tr>
-                      <tr><td>G</td><td>62</td><td>78</td><td>25</td></tr>
-                      <tr><td>GG</td><td>65</td><td>80</td><td>26</td></tr>
-                      <tr><td>XG</td><td>68</td><td>82</td><td>27</td></tr>
-                    </tbody>
-                  </table>
-                  <p class="size-guide-tip">Dica: Nossa modelagem é oversized autêntica. Para caimento streetwear, peça seu tamanho padrão.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Espaço inferior para o sticky CTA mobile não tapar acordeões -->
-          <div class="mobile-sticky-spacer"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sticky CTA Mobile (fixado no rodapé, visível apenas no mobile) -->
-    <div class="mobile-sticky-cta mobile-only" id="mobileStickyCta">
-      <div class="mobile-sticky-size-indicator">
-        <span>TAMANHO: </span><span id="mobileStickySize">M</span>
-      </div>
-      <button class="mobile-sticky-btn" onclick="window.addProductPageToCart('${product.id}')">
-        ADICIONAR AO DROP
-        <span class="sticky-price">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
-      </button>
-    </div>
-  `;
-
-  overlay.classList.add("open");
-  document.body.style.overflow = "hidden";
-  
-  // Iniciar zoom na imagem principal (apenas desktop)
-  window.setupImageZoom();
-};
-
-window.closeProductPage = function() {
-  const overlay = document.getElementById("productPageOverlay");
-  if (!overlay) return;
-  overlay.classList.remove("open");
-  document.body.style.overflow = ""; // Reabilitar scroll
-};
-
-window.changeProductImage = function(thumbElement, imageUrl) {
-  // Alterar a imagem hero principal
-  const mainImage = document.getElementById("productMainImage");
-  if (mainImage) {
-    mainImage.src = imageUrl;
-  }
-
-  // Identificar qual parte do produto estamos vendo para a label informativa
-  const indicator = document.querySelector(".product-gallery-indicator");
-  if (indicator) {
-    if (imageUrl.includes("back")) {
-      indicator.textContent = "Costas (Main Print)";
-    } else if (imageUrl.includes("front")) {
-      indicator.textContent = "Frente (Front View)";
-    } else if (imageUrl.includes("graphic")) {
-      indicator.textContent = "Detalhe do Grafismo";
-    } else if (imageUrl.includes("gym") || imageUrl.includes("lifestyle")) {
-      indicator.textContent = "Campanha Lifestyle";
-    } else if (imageUrl.includes("logo") || imageUrl.includes("character")) {
-      indicator.textContent = "Detalhe do Tecido";
-    } else {
-      indicator.textContent = "Detalhe Ampliado";
+      if (elementVisible) {
+        const offset = (scrolled + window.innerHeight - parentTop) * 0.03;
+        flagshipImage.style.transform = `translate3d(0, ${offset}px, 0) scale(1.03)`;
+      }
     }
-  }
+  }, { passive: true });
+}
 
-  // Alterar classe ativa das miniaturas
-  const allThumbs = document.querySelectorAll(".product-gallery-thumb");
-  allThumbs.forEach(t => t.classList.remove("active"));
-  thumbElement.classList.add("active");
-};
-
-window.selectProductPageSize = function(buttonElement, size) {
-  currentProductPageSize = size;
-  
-  const allButtons = document.querySelectorAll(".size-rounded-btn");
-  allButtons.forEach(btn => btn.classList.remove("active"));
-  buttonElement.classList.add("active");
-
-  const display = document.getElementById("activeSizeDisplay");
-  if (display) {
-    display.textContent = `${size} ${size === 'M' ? '(RECOMENDADO)' : ''}`;
-  }
-
-  // Sincronizar com o indicador de tamanho do sticky CTA mobile
-  const mobileStickySize = document.getElementById("mobileStickySize");
-  if (mobileStickySize) {
-    mobileStickySize.textContent = size;
-  }
-};
-
-// Atualizar bullets da galeria swipeable mobile baseado na rolagem
-window.updateGalleryBullets = function(trackEl) {
-  const slideWidth = trackEl.offsetWidth;
-  const currentIndex = Math.round(trackEl.scrollLeft / slideWidth);
-  const bullets = document.querySelectorAll(".gallery-bullet");
-  bullets.forEach((b, i) => b.classList.toggle("active", i === currentIndex));
-};
-
-window.toggleProductAccordion = function(headerElement) {
-  const parent = headerElement.parentElement;
-  const content = parent.querySelector(".product-accordion-content");
-  const isExpanded = headerElement.classList.contains("active");
-
-  // Fechar todos na página do produto
-  const allItems = document.querySelectorAll(".product-accordion-item");
-  allItems.forEach(item => {
-    item.querySelector(".product-accordion-header").classList.remove("active");
-    item.querySelector(".accordion-icon").textContent = "+";
-    item.querySelector(".product-accordion-content").style.maxHeight = null;
-  });
-
-  if (!isExpanded) {
-    headerElement.classList.add("active");
-    headerElement.querySelector(".accordion-icon").textContent = "−";
-    content.style.maxHeight = content.scrollHeight + "px";
-  }
-};
-
-window.setupImageZoom = function() {
-  const container = document.getElementById("productMainImageContainer");
-  const img = document.getElementById("productMainImage");
-  if (!container || !img) return;
-
-  container.addEventListener("mousemove", (e) => {
-    const rect = container.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const xPercent = (x / rect.width) * 100;
-    const yPercent = (y / rect.height) * 100;
-
-    img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-    img.style.transform = "scale(1.7)";
-  });
-
-  container.addEventListener("mouseleave", () => {
-    img.style.transform = "scale(1)";
-    img.style.transformOrigin = "center center";
-  });
-};
-
-window.addProductPageToCart = function(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  if (!product) return;
-
-  const size = currentProductPageSize;
-  const existingItem = shoppingCart.find(item => item.product.id === productId && item.size === size);
-
-  if (existingItem) {
-    existingItem.quantity += 1;
-  } else {
-    shoppingCart.push({
-      product: product,
-      size: size,
-      quantity: 1
-    });
-  }
-
-  updateCartUI();
-  window.closeProductPage(); // Opcional: fechar para o cliente ver o carrinho abrir
-  window.openCart();
-};
