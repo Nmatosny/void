@@ -49,8 +49,20 @@ async function initShopify() {
     const res = await fetch('/api/config');
     const config = await res.json();
     
-    SHOPIFY_DOMAIN = config.domain || "";
-    SHOPIFY_ACCESS_TOKEN = config.accessToken || "";
+    const cleanValue = (val) => {
+      if (!val) return '';
+      let cleaned = val.trim();
+      if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+        cleaned = cleaned.slice(1, -1);
+      }
+      if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
+        cleaned = cleaned.slice(1, -1);
+      }
+      return cleaned.trim();
+    };
+
+    SHOPIFY_DOMAIN = cleanValue(config.domain);
+    SHOPIFY_ACCESS_TOKEN = cleanValue(config.accessToken);
 
     if (!SHOPIFY_DOMAIN || !SHOPIFY_ACCESS_TOKEN) {
       console.warn("[SHOPIFY CONFIG] Variáveis de ambiente do Shopify não configuradas.");
