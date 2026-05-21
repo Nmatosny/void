@@ -663,6 +663,7 @@ function updateCartUI(cartData) {
   const cartBadge = document.getElementById("cartBadge");
   const cartEmptyState = document.getElementById("cartEmptyState");
   const cartFilledState = document.getElementById("cartFilledState");
+  const cartFooter = document.getElementById("cartFooter");
   const cartItemsContainer = document.getElementById("cartItemsContainer");
   const freeShippingStatus = document.getElementById("freeShippingStatus");
   const freeShippingBar = document.getElementById("freeShippingBar");
@@ -675,12 +676,14 @@ function updateCartUI(cartData) {
     cartBadge.textContent = "0";
     cartEmptyState.style.display = "block";
     cartFilledState.style.display = "none";
+    if (cartFooter) cartFooter.style.display = "none";
     return;
   }
 
   cartBadge.textContent = totalQuantity;
   cartEmptyState.style.display = "none";
   cartFilledState.style.display = "flex";
+  if (cartFooter) cartFooter.style.display = "block";
 
   // Preencher itens reais no carrinho
   cartItemsContainer.innerHTML = shoppingCart.map(item => `
